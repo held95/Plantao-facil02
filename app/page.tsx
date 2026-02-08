@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import { APP_NAME } from '@/lib/constants';
+import { Navbar } from '@/components/layout/Navbar';
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <Navbar />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
