@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { APP_NAME } from '@/lib/constants';
-import { FileText, Home, BarChart3 } from 'lucide-react';
+import { Calendar, Home, User } from 'lucide-react';
 
 export function Navbar() {
   return (
@@ -10,7 +10,7 @@ export function Navbar() {
           {/* Logo and App Name */}
           <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
             <div className="bg-blue-600 text-white p-2 rounded-lg">
-              <FileText className="h-6 w-6" />
+              <Calendar className="h-6 w-6" />
             </div>
             <span className="text-xl font-bold text-slate-900">
               {APP_NAME}
@@ -28,28 +28,20 @@ export function Navbar() {
             </Link>
 
             <Link
-              href="/documents"
+              href="/plantoes"
               className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 transition-colors"
             >
-              <FileText className="h-5 w-5" />
-              <span className="font-medium">Documentos</span>
+              <Calendar className="h-5 w-5" />
+              <span className="font-medium">Plantões</span>
             </Link>
 
             <Link
-              href="/analytics"
+              href="#"
               className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 transition-colors"
             >
-              <BarChart3 className="h-5 w-5" />
-              <span className="font-medium">Analytics</span>
+              <User className="h-5 w-5" />
+              <span className="font-medium">Perfil</span>
             </Link>
-          </div>
-
-          {/* User Section (Phase 3 - Authentication) */}
-          <div className="flex items-center space-x-4">
-            <div className="text-sm text-slate-600">
-              <span className="hidden md:inline">Bem-vindo</span>
-            </div>
-            {/* Login button will be added in Phase 3 */}
           </div>
         </div>
       </div>
