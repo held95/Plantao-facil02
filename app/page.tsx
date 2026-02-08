@@ -7,76 +7,76 @@ import { Calendar, DollarSign, Hospital, Users, Clock, MapPin } from 'lucide-rea
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-5xl mx-auto">
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-16">
+            <h1 className="text-4xl font-bold text-gray-900 mb-3">
               {APP_NAME}
             </h1>
-            <p className="text-2xl text-gray-700 mb-2">
+            <p className="text-xl text-gray-600 mb-2">
               Encontre Plantões Médicos
             </p>
-            <p className="text-lg text-gray-600">
+            <p className="text-base text-gray-500">
               Conecte-se com oportunidades em hospitais de todo o Brasil
             </p>
           </div>
 
           {/* Stats Cards */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <Card>
+          <div className="grid md:grid-cols-3 gap-6 mb-16">
+            <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="pt-6 text-center">
-                <div className="text-4xl mb-3">🏥</div>
-                <div className="text-3xl font-bold text-gray-900">8</div>
-                <div className="text-sm text-gray-600 mt-1">Plantões Disponíveis</div>
+                <Hospital className="h-10 w-10 text-blue-600 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900">8</div>
+                <div className="text-sm text-gray-500 mt-1">Plantões Disponíveis</div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="pt-6 text-center">
-                <div className="text-4xl mb-3">💰</div>
-                <div className="text-3xl font-bold text-gray-900">R$ 800 - R$ 2.000</div>
-                <div className="text-sm text-gray-600 mt-1">Faixa de Valores</div>
+                <DollarSign className="h-10 w-10 text-green-600 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900">R$ 800 - R$ 2.000</div>
+                <div className="text-sm text-gray-500 mt-1">Faixa de Valores</div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="pt-6 text-center">
-                <div className="text-4xl mb-3">📍</div>
-                <div className="text-3xl font-bold text-gray-900">4</div>
-                <div className="text-sm text-gray-600 mt-1">Cidades Atendidas</div>
+                <MapPin className="h-10 w-10 text-purple-600 mx-auto mb-3" />
+                <div className="text-2xl font-bold text-gray-900">4</div>
+                <div className="text-sm text-gray-500 mt-1">Cidades Atendidas</div>
               </CardContent>
             </Card>
           </div>
 
           {/* CTA Card */}
-          <Card className="mb-12 bg-white">
-            <CardContent className="pt-8 pb-8 text-center">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+          <Card className="mb-16 border-gray-200 shadow-sm">
+            <CardContent className="pt-10 pb-10 text-center">
+              <h2 className="text-2xl font-bold text-gray-900 mb-3">
                 Encontre Seu Próximo Plantão
               </h2>
-              <p className="text-gray-600 mb-6 text-lg max-w-2xl mx-auto">
+              <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
                 Navegue por plantões disponíveis em diversas especialidades e hospitais.
                 Inscreva-se de forma rápida e simples.
               </p>
 
               <Link href="/plantoes">
-                <Button size="lg" className="text-lg px-8 py-6">
-                  Ver Plantões Disponíveis →
+                <Button size="lg" className="px-8">
+                  Ver Plantões Disponíveis
                 </Button>
               </Link>
             </CardContent>
           </Card>
 
           {/* Features Grid */}
-          <div className="grid md:grid-cols-2 gap-6 mb-12">
-            <Card>
+          <div className="grid md:grid-cols-2 gap-6 mb-16">
+            <Card className="border-gray-200 shadow-sm">
               <CardContent className="pt-6">
                 <Hospital className="h-8 w-8 text-blue-600 mb-3" />
-                <h3 className="font-bold text-lg text-gray-900 mb-2">
+                <h3 className="font-semibold text-base text-gray-900 mb-2">
                   Diversos Hospitais
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -85,10 +85,10 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-gray-200 shadow-sm">
               <CardContent className="pt-6">
                 <Users className="h-8 w-8 text-green-600 mb-3" />
-                <h3 className="font-bold text-lg text-gray-900 mb-2">
+                <h3 className="font-semibold text-base text-gray-900 mb-2">
                   Múltiplas Especialidades
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -97,10 +97,10 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-gray-200 shadow-sm">
               <CardContent className="pt-6">
                 <Clock className="h-8 w-8 text-purple-600 mb-3" />
-                <h3 className="font-bold text-lg text-gray-900 mb-2">
+                <h3 className="font-semibold text-base text-gray-900 mb-2">
                   Horários Flexíveis
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -109,10 +109,10 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border-gray-200 shadow-sm">
               <CardContent className="pt-6">
-                <DollarSign className="h-8 w-8 text-yellow-600 mb-3" />
-                <h3 className="font-bold text-lg text-gray-900 mb-2">
+                <DollarSign className="h-8 w-8 text-emerald-600 mb-3" />
+                <h3 className="font-semibold text-base text-gray-900 mb-2">
                   Valores Competitivos
                 </h3>
                 <p className="text-gray-600 text-sm">
@@ -123,48 +123,45 @@ export default function HomePage() {
           </div>
 
           {/* How it Works */}
-          <Card className="mb-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-            <CardContent className="pt-8 pb-8">
-              <h2 className="text-2xl font-bold text-center mb-8">Como Funciona</h2>
+          <div className="bg-gray-50 rounded-lg border border-gray-200 p-8 mb-16">
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-10">Como Funciona</h2>
 
-              <div className="grid md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <span className="text-3xl font-bold">1</span>
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2">Navegue</h3>
-                  <p className="text-sm text-blue-100">
-                    Veja todos os plantões disponíveis com detalhes completos
-                  </p>
+            <div className="grid md:grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-white">1</span>
                 </div>
-
-                <div className="text-center">
-                  <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <span className="text-3xl font-bold">2</span>
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2">Inscreva-se</h3>
-                  <p className="text-sm text-blue-100">
-                    Candidate-se ao plantão que se encaixa na sua especialidade
-                  </p>
-                </div>
-
-                <div className="text-center">
-                  <div className="bg-white/20 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <span className="text-3xl font-bold">3</span>
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2">Confirme</h3>
-                  <p className="text-sm text-blue-100">
-                    Receba confirmação e detalhes do plantão por email
-                  </p>
-                </div>
+                <h3 className="font-semibold text-base text-gray-900 mb-2">Navegue</h3>
+                <p className="text-sm text-gray-600">
+                  Veja todos os plantões disponíveis com detalhes completos
+                </p>
               </div>
-            </CardContent>
-          </Card>
+
+              <div className="text-center">
+                <div className="bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-white">2</span>
+                </div>
+                <h3 className="font-semibold text-base text-gray-900 mb-2">Inscreva-se</h3>
+                <p className="text-sm text-gray-600">
+                  Candidate-se ao plantão que se encaixa na sua especialidade
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl font-bold text-white">3</span>
+                </div>
+                <h3 className="font-semibold text-base text-gray-900 mb-2">Confirme</h3>
+                <p className="text-sm text-gray-600">
+                  Receba confirmação e detalhes do plantão por email
+                </p>
+              </div>
+            </div>
+          </div>
 
           {/* Footer */}
-          <div className="text-center text-gray-500 text-sm">
-            <p>Versão 1.0.0 • Desenvolvido com Next.js, TypeScript e TailwindCSS</p>
-            <p className="mt-1">Plataforma de Gestão de Plantões Médicos</p>
+          <div className="text-center text-gray-400 text-xs border-t border-gray-200 pt-8">
+            <p>Versão 1.0.0 • Plataforma de Gestão de Plantões Médicos</p>
           </div>
         </div>
       </div>

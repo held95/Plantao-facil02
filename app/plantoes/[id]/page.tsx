@@ -66,14 +66,14 @@ export default function PlantaoDetailPage({
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-white">
       <Navbar />
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Back Button */}
         <div className="mb-6">
           <Link href="/plantoes">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-gray-300">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar para Plantões
             </Button>
@@ -83,21 +83,21 @@ export default function PlantaoDetailPage({
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Info */}
           <div className="lg:col-span-2 space-y-6">
-            <Card>
+            <Card className="border-gray-200 shadow-sm">
               <CardHeader>
                 <div className="flex items-center gap-2 mb-3">
-                  <Badge variant="default" className="text-base">
+                  <Badge variant="default" className="bg-blue-600">
                     {plantao.especialidade}
                   </Badge>
-                  <Badge variant={plantao.vagasDisponiveis > 0 ? 'success' : 'destructive'}>
+                  <Badge variant={plantao.vagasDisponiveis > 0 ? 'success' : 'destructive'} className="border-gray-300">
                     {plantao.vagasDisponiveis > 0
                       ? `${plantao.vagasDisponiveis} ${plantao.vagasDisponiveis === 1 ? 'vaga disponível' : 'vagas disponíveis'}`
                       : 'Sem vagas'}
                   </Badge>
                 </div>
 
-                <CardTitle className="text-3xl mb-2">{plantao.hospital}</CardTitle>
-                <CardDescription className="text-base">
+                <CardTitle className="text-3xl mb-2 text-gray-900">{plantao.hospital}</CardTitle>
+                <CardDescription className="text-base text-gray-600">
                   {plantao.cidade} - {plantao.estado}
                 </CardDescription>
               </CardHeader>
@@ -105,17 +105,17 @@ export default function PlantaoDetailPage({
               <CardContent className="space-y-6">
                 {plantao.descricao && (
                   <div>
-                    <h3 className="font-semibold text-slate-900 mb-2">Descrição</h3>
-                    <p className="text-slate-600">{plantao.descricao}</p>
+                    <h3 className="font-semibold text-gray-900 mb-2">Descrição</h3>
+                    <p className="text-gray-600">{plantao.descricao}</p>
                   </div>
                 )}
 
                 {plantao.requisitos && plantao.requisitos.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-slate-900 mb-3">Requisitos</h3>
+                    <h3 className="font-semibold text-gray-900 mb-3">Requisitos</h3>
                     <ul className="space-y-2">
                       {plantao.requisitos.map((req, index) => (
-                        <li key={index} className="flex items-start gap-2 text-slate-600">
+                        <li key={index} className="flex items-start gap-2 text-gray-600">
                           <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
                           <span>{req}</span>
                         </li>
@@ -127,9 +127,9 @@ export default function PlantaoDetailPage({
             </Card>
 
             {/* Details Grid */}
-            <Card>
+            <Card className="border-gray-200 shadow-sm">
               <CardHeader>
-                <CardTitle>Informações do Plantão</CardTitle>
+                <CardTitle className="text-gray-900">Informações do Plantão</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid md:grid-cols-2 gap-6">
@@ -159,40 +159,40 @@ export default function PlantaoDetailPage({
 
           {/* Sidebar - Inscrição */}
           <div>
-            <Card className="sticky top-4">
+            <Card className="sticky top-4 border-gray-200 shadow-sm">
               <CardHeader>
-                <CardTitle>Inscrever-se no Plantão</CardTitle>
+                <CardTitle className="text-gray-900">Inscrever-se no Plantão</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="bg-slate-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-slate-900 mb-1">
+                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <div className="text-2xl font-bold text-gray-900 mb-1">
                     R$ {plantao.valor.toLocaleString('pt-BR')}
                   </div>
-                  <div className="text-sm text-slate-600">
+                  <div className="text-sm text-gray-600">
                     Pagamento após conclusão do plantão
                   </div>
                 </div>
 
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Duração:</span>
-                    <span className="font-medium">{calcularDuracao()} horas</span>
+                    <span className="text-gray-600">Duração:</span>
+                    <span className="font-medium text-gray-900">{calcularDuracao()} horas</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Vagas disponíveis:</span>
-                    <span className="font-medium">
+                    <span className="text-gray-600">Vagas disponíveis:</span>
+                    <span className="font-medium text-gray-900">
                       {plantao.vagasDisponiveis} de {plantao.vagasTotal}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-600">Data:</span>
-                    <span className="font-medium">{formatDate(plantao.data)}</span>
+                    <span className="text-gray-600">Data:</span>
+                    <span className="font-medium text-gray-900">{formatDate(plantao.data)}</span>
                   </div>
                 </div>
 
                 {!inscrito ? (
                   <Button
-                    className="w-full"
+                    className="w-full bg-blue-600 hover:bg-blue-700"
                     size="lg"
                     onClick={handleInscrever}
                     disabled={plantao.vagasDisponiveis === 0}
@@ -209,7 +209,7 @@ export default function PlantaoDetailPage({
                   </div>
                 )}
 
-                <p className="text-xs text-slate-500 text-center">
+                <p className="text-xs text-gray-500 text-center">
                   Ao se inscrever, você concorda com os termos e condições do plantão
                 </p>
               </CardContent>
@@ -234,10 +234,10 @@ function InfoItem({
 }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="text-slate-400 mt-1">{icon}</div>
+      <div className="text-gray-400 mt-1">{icon}</div>
       <div className="flex-1">
-        <p className="text-sm text-slate-500">{label}</p>
-        <p className={`font-medium ${valueClassName || 'text-slate-900'}`}>{value}</p>
+        <p className="text-sm text-gray-500">{label}</p>
+        <p className={`font-medium ${valueClassName || 'text-gray-900'}`}>{value}</p>
       </div>
     </div>
   );

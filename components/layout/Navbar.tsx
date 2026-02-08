@@ -1,46 +1,41 @@
 import Link from 'next/link';
 import { APP_NAME } from '@/lib/constants';
-import { Calendar, Home, User } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
 export function Navbar() {
   return (
-    <nav className="bg-white border-b border-slate-200 shadow-sm">
-      <div className="container mx-auto px-4">
+    <nav className="bg-white border-b border-gray-200 shadow-sm">
+      <div className="container mx-auto px-4 max-w-7xl">
         <div className="flex items-center justify-between h-16">
           {/* Logo and App Name */}
-          <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
-            <div className="bg-blue-600 text-white p-2 rounded-lg">
-              <Calendar className="h-6 w-6" />
-            </div>
-            <span className="text-xl font-bold text-slate-900">
+          <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+            <Calendar className="h-6 w-6 text-blue-600" />
+            <span className="text-xl font-bold text-gray-900">
               {APP_NAME}
             </span>
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-1">
             <Link
               href="/"
-              className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
             >
-              <Home className="h-5 w-5" />
-              <span className="font-medium">Início</span>
+              Início
             </Link>
 
             <Link
               href="/plantoes"
-              className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
             >
-              <Calendar className="h-5 w-5" />
-              <span className="font-medium">Plantões</span>
+              Plantões
             </Link>
 
             <Link
-              href="#"
-              className="flex items-center space-x-2 text-slate-600 hover:text-slate-900 transition-colors"
+              href="/perfil"
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
             >
-              <User className="h-5 w-5" />
-              <span className="font-medium">Perfil</span>
+              Perfil
             </Link>
           </div>
         </div>
