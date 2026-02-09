@@ -6,11 +6,19 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Calendar, Clock, MapPin, DollarSign } from 'lucide-react';
+import { Calendar, Clock, MapPin, DollarSign, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { plantaoApi } from '@/lib/api/plantoes';
+import { usePlantaoStore } from '@/stores/plantaoStore';
+import { validatePlantaoForm, PlantaoFormData } from '@/lib/validation/plantaoValidation';
 
 export default function CriarPlantaoPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const { addPlantao } = usePlantaoStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const [formData, setFormData] = useState<PlantaoFormData>({
     titulo: '',
     descricao: '',
     data: '',
@@ -25,21 +33,86 @@ export default function CriarPlantaoPage() {
     vagasTotal: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui voce adicionaria a logica para salvar o plantao
-    console.log('Criando plantao:', formData);
-    alert('Plantao criado com sucesso!');
-    router.push('/plantoes');
+
+    // Clear previous errors
+    setErrors({});
+
+    // Validate form
+    const validationErrors = validatePlantaoForm(formData);
+    if (validationErrors.length > 0) {
+      const errorMap: Record<string, string> = {};
+      validationErrors.forEach((err) => {
+        errorMap[err.field] = err.message;
+      });
+      setErrors(errorMap);
+      toast.error('Por favor, corrija os erros no formulário');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Submit to API
+      const response = await plantaoApi.create(formData);
+
+      // Update local store
+      addPlantao(response.plantao);
+
+      // Show success toast
+      toast.success(response.message || 'Plantão criado com sucesso!', {
+        description: 'O plantão está disponível no calendário.',
+      });
+
+      // Redirect to plantões list
+      router.push('/plantoes');
+    } catch (error: any) {
+      console.error('Error creating plantão:', error);
+
+      // Handle validation errors from API
+      if (error.response?.data?.validationErrors) {
+        const errorMap: Record<string, string> = {};
+        error.response.data.validationErrors.forEach((err: any) => {
+          errorMap[err.field] = err.message;
+        });
+        setErrors(errorMap);
+        toast.error('Dados inválidos. Verifique os campos.');
+      } else {
+        const message =
+          error.response?.data?.error ||
+          'Erro ao criar plantão. Tente novamente.';
+        toast.error(message);
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
     router.push('/');
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Clear error for this field when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  // Error message component
+  const ErrorMessage = ({ field }: { field: string }) => {
+    if (!errors[field]) return null;
+    return <p className="text-sm text-red-600 mt-1">{errors[field]}</p>;
   };
 
   return (
@@ -69,23 +142,23 @@ export default function CriarPlantaoPage() {
                 {/* Titulo */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Titulo
+                    Título *
                   </label>
                   <Input
                     type="text"
                     name="titulo"
                     value={formData.titulo}
                     onChange={handleChange}
-                    placeholder="Ex: Plantao Clinica Geral - Hospital Municipal"
-                    className="w-full border-gray-200"
-                    required
+                    placeholder="Ex: Plantão Clínica Geral - Hospital Municipal"
+                    className={`w-full ${errors.titulo ? 'border-red-500' : 'border-gray-200'}`}
                   />
+                  <ErrorMessage field="titulo" />
                 </div>
 
                 {/* Hospital */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Hospital
+                    Hospital *
                   </label>
                   <Input
                     type="text"
@@ -93,9 +166,9 @@ export default function CriarPlantaoPage() {
                     value={formData.hospital}
                     onChange={handleChange}
                     placeholder="Nome do hospital"
-                    className="w-full border-gray-200"
-                    required
+                    className={`w-full ${errors.hospital ? 'border-red-500' : 'border-gray-200'}`}
                   />
+                  <ErrorMessage field="hospital" />
                 </div>
 
                 {/* Especialidade */}
@@ -286,14 +359,23 @@ export default function CriarPlantaoPage() {
                   <Button
                     type="submit"
                     className="flex-1"
+                    disabled={isSubmitting}
                   >
-                    Criar Plantao
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Criando Plantão...
+                      </>
+                    ) : (
+                      'Criar Plantão'
+                    )}
                   </Button>
                   <Button
                     type="button"
                     variant="outline"
                     onClick={handleCancel}
                     className="flex-1"
+                    disabled={isSubmitting}
                   >
                     Cancelar
                   </Button>

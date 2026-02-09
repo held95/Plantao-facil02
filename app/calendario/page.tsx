@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { CalendarGrid } from '@/components/calendario/CalendarGrid';
 import { FilterPanel } from '@/components/calendario/FilterPanel';
 import { StatusLegend } from '@/components/calendario/StatusLegend';
+import { PlantaoDetailModal } from '@/components/calendario/PlantaoDetailModal';
 import {
   getMonthNameCapitalized,
   getPreviousMonth,
@@ -21,6 +22,8 @@ export default function CalendarioPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [localFilter, setLocalFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('todos');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   // Add statusDisplay to plantões
   const plantoesWithStatus = mockPlantoes.map((plantao) => ({
@@ -51,9 +54,17 @@ export default function CalendarioPage() {
   };
 
   const handleDayClick = (date: Date) => {
-    // TODO: Show plantões for selected date in a modal or sidebar
-    console.log('Selected date:', date);
+    setSelectedDate(date);
+    setModalOpen(true);
   };
+
+  // Filter plantões for selected date
+  const selectedPlantoes = selectedDate
+    ? filteredPlantoes.filter((p) => {
+        const plantaoDate = new Date(p.data);
+        return plantaoDate.toDateString() === selectedDate.toDateString();
+      })
+    : [];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/20 to-gray-50">
@@ -142,6 +153,14 @@ export default function CalendarioPage() {
           💡 Dica: Clique em um dia para ver os detalhes dos plantões
         </div>
       </div>
+
+      {/* Plantão Detail Modal */}
+      <PlantaoDetailModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        plantoes={selectedPlantoes}
+        selectedDate={selectedDate || new Date()}
+      />
     </div>
   );
 }
