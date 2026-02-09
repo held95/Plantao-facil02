@@ -1,42 +1,75 @@
+'use client';
+
 import Link from 'next/link';
-import { APP_NAME } from '@/lib/constants';
-import { Calendar } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { LayoutDashboard, Calendar, Plus, FileText, Bell, Users, LogOut } from 'lucide-react';
 
 export function Navbar() {
+  const pathname = usePathname();
+
+  const navItems = [
+    { href: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/plantoes', label: 'Plantões', icon: Calendar },
+    { href: '/criar', label: 'Criar Plantão', icon: Plus },
+    { href: '/inscricoes', label: 'Minhas Inscrições', icon: FileText },
+    { href: '/notificacoes', label: 'Notificações', icon: Bell },
+    { href: '/coordenadores', label: 'Coordenadores', icon: Users },
+  ];
+
   return (
-    <nav className="bg-white border-b border-gray-200 shadow-sm">
-      <div className="container mx-auto px-4 max-w-7xl">
+    <nav className="bg-white border-b border-gray-200">
+      <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo and App Name */}
-          <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <Calendar className="h-6 w-6 text-blue-600" />
-            <span className="text-xl font-bold text-gray-900">
-              {APP_NAME}
-            </span>
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="bg-gradient-to-br from-teal-400 to-cyan-500 p-2 rounded-lg">
+              <Calendar className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <span className="text-lg font-bold text-gray-900 block leading-tight">
+                Gestão de Plantões
+              </span>
+              <span className="text-xs text-gray-500">ProTime</span>
+            </div>
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-1">
-            <Link
-              href="/"
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-            >
-              Início
-            </Link>
+          <div className="flex items-center space-x-6">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
 
-            <Link
-              href="/plantoes"
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-            >
-              Plantões
-            </Link>
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                    isActive
+                      ? 'text-gray-900'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
 
-            <Link
-              href="/perfil"
-              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md transition-colors"
-            >
-              Perfil
-            </Link>
+          {/* User Menu */}
+          <div className="flex items-center space-x-4">
+            <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
+              <Bell className="h-5 w-5" />
+            </button>
+            <div className="flex items-center space-x-3">
+              <div className="text-right">
+                <div className="text-sm font-medium text-gray-900">Hélder Corrêa</div>
+                <div className="text-xs text-gray-500">Coordenador</div>
+              </div>
+              <button className="p-2 text-gray-600 hover:text-gray-900 transition-colors">
+                <LogOut className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
