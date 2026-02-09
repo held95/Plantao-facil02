@@ -34,13 +34,17 @@ export function CalendarGrid({
   }, {} as Record<string, Plantao[]>);
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
+    <div className="rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
       {/* Weekday Headers */}
-      <div className="grid grid-cols-7 border-b border-gray-200 bg-gray-50">
-        {weekDays.map((day) => (
+      <div className="grid grid-cols-7 border-b-2 border-gray-200 bg-gradient-to-b from-gray-50 to-gray-100">
+        {weekDays.map((day, index) => (
           <div
             key={day}
-            className="py-3 text-center text-sm font-medium text-gray-700"
+            className={`py-4 text-center text-sm font-bold uppercase tracking-wide ${
+              index === 0 || index === 6
+                ? 'text-slate-600'
+                : 'text-gray-700'
+            }`}
           >
             {day}
           </div>
@@ -48,7 +52,7 @@ export function CalendarGrid({
       </div>
 
       {/* Calendar Days Grid */}
-      <div className="grid grid-cols-7">
+      <div className="grid grid-cols-7 bg-white">
         {monthDays.map((date, index) => {
           const dateKey = date.toDateString();
           const dayPlantoes = plantoesByDate[dateKey] || [];
