@@ -28,7 +28,7 @@ export default function HomePage() {
             <CardContent className="pt-6 pb-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-medium text-gray-600">Plantoes Disponiveis</div>
-                <Calendar className="h-5 w-5 text-blue-600" />
+                <Calendar className="h-5 w-5 text-gray-600" />
               </div>
               <div className="text-3xl font-bold text-gray-900">8</div>
               <p className="text-xs text-gray-500 mt-1">Plantoes abertos para inscricao</p>
@@ -39,7 +39,7 @@ export default function HomePage() {
             <CardContent className="pt-6 pb-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-medium text-gray-600">Minhas Inscricoes</div>
-                <FileText className="h-5 w-5 text-green-600" />
+                <FileText className="h-5 w-5 text-gray-600" />
               </div>
               <div className="text-3xl font-bold text-gray-900">3</div>
               <p className="text-xs text-gray-500 mt-1">Inscricoes ativas</p>
@@ -50,7 +50,7 @@ export default function HomePage() {
             <CardContent className="pt-6 pb-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-medium text-gray-600">Horas Trabalhadas</div>
-                <Clock className="h-5 w-5 text-purple-600" />
+                <Clock className="h-5 w-5 text-gray-600" />
               </div>
               <div className="text-3xl font-bold text-gray-900">72</div>
               <p className="text-xs text-gray-500 mt-1">Total este mes</p>
@@ -61,7 +61,7 @@ export default function HomePage() {
             <CardContent className="pt-6 pb-6">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-sm font-medium text-gray-600">Este Mes</div>
-                <TrendingUp className="h-5 w-5 text-emerald-600" />
+                <TrendingUp className="h-5 w-5 text-gray-600" />
               </div>
               <div className="text-3xl font-bold text-gray-900">R$ 9.600</div>
               <p className="text-xs text-gray-500 mt-1">Valor total estimado</p>
@@ -73,25 +73,25 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Ver Plantoes Disponiveis */}
           <Link href="/plantoes">
-            <Card className="bg-gradient-to-br from-blue-500 to-blue-600 border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer group">
+            <Card className="bg-gradient-to-br from-slate-600 to-slate-700 border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer group">
               <CardContent className="pt-8 pb-8">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-2xl font-bold text-white mb-2">
                       Ver Plantoes Disponiveis
                     </h3>
-                    <p className="text-blue-100 text-sm mb-4">
+                    <p className="text-slate-100 text-sm mb-4">
                       Navegue por plantoes abertos e se inscreva
                     </p>
                     <Button
                       variant="secondary"
-                      className="bg-white text-blue-600 hover:bg-blue-50"
+                      className="bg-white text-slate-700 hover:bg-slate-50"
                     >
                       Ver Plantoes
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
-                  <Calendar className="h-16 w-16 text-blue-200 group-hover:scale-110 transition-transform" />
+                  <Calendar className="h-16 w-16 text-slate-200 group-hover:scale-110 transition-transform" />
                 </div>
               </CardContent>
             </Card>
@@ -99,25 +99,25 @@ export default function HomePage() {
 
           {/* Criar Novo Plantao */}
           <Link href="/criar">
-            <Card className="bg-gradient-to-br from-green-500 to-green-600 border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer group">
+            <Card className="bg-gradient-to-br from-slate-600 to-slate-700 border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer group">
               <CardContent className="pt-8 pb-8">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-2xl font-bold text-white mb-2">
                       Criar Novo Plantao
                     </h3>
-                    <p className="text-green-100 text-sm mb-4">
+                    <p className="text-slate-100 text-sm mb-4">
                       Publique um novo plantao para sua equipe
                     </p>
                     <Button
                       variant="secondary"
-                      className="bg-white text-green-600 hover:bg-green-50"
+                      className="bg-white text-slate-700 hover:bg-slate-50"
                     >
                       Criar Plantao
                       <Plus className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
-                  <Plus className="h-16 w-16 text-green-200 group-hover:scale-110 transition-transform" />
+                  <Plus className="h-16 w-16 text-slate-200 group-hover:scale-110 transition-transform" />
                 </div>
               </CardContent>
             </Card>

@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Tabs } from '@/components/ui/tabs';
 import { Calendar, Clock, MapPin, Hospital, DollarSign, X } from 'lucide-react';
 
 // Mock data para inscricoes
@@ -59,6 +61,8 @@ const mockInscricoes = [
 ];
 
 export default function InscricoesPage() {
+  const [activeTab, setActiveTab] = useState('todas');
+
   const handleCancelarInscricao = (id: string) => {
     if (confirm('Tem certeza que deseja cancelar esta inscricao?')) {
       // Aqui voce adicionaria a logica para cancelar a inscricao
@@ -76,6 +80,22 @@ export default function InscricoesPage() {
     });
   };
 
+  // Filter inscricoes based on active tab
+  const filteredInscricoes = mockInscricoes.filter((inscricao) => {
+    if (activeTab === 'todas') return true;
+    if (activeTab === 'confirmadas') return inscricao.status === 'confirmado';
+    if (activeTab === 'pendentes') return inscricao.status === 'pendente';
+    if (activeTab === 'canceladas') return inscricao.status === 'cancelado';
+    return true;
+  });
+
+  const tabs = [
+    { value: 'todas', label: 'Todas' },
+    { value: 'confirmadas', label: 'Confirmadas' },
+    { value: 'pendentes', label: 'Pendentes' },
+    { value: 'canceladas', label: 'Canceladas' },
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -90,6 +110,14 @@ export default function InscricoesPage() {
             Acompanhe suas inscricoes em plantoes
           </p>
         </div>
+
+        {/* Tabs */}
+        <Tabs
+          tabs={tabs}
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="mb-8"
+        />
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -121,7 +149,7 @@ export default function InscricoesPage() {
 
         {/* Inscricoes List */}
         <div className="space-y-4">
-          {mockInscricoes.map((inscricao) => (
+          {filteredInscricoes.map((inscricao) => (
             <Card key={inscricao.id} className="bg-white border-gray-200 shadow-sm hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
@@ -193,7 +221,7 @@ export default function InscricoesPage() {
           ))}
         </div>
 
-        {mockInscricoes.length === 0 && (
+        {filteredInscricoes.length === 0 && (
           <Card className="bg-white border-gray-200">
             <CardContent className="pt-12 pb-12 text-center">
               <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
@@ -203,7 +231,7 @@ export default function InscricoesPage() {
               <p className="text-gray-600 mb-6">
                 Voce ainda nao se inscreveu em nenhum plantao.
               </p>
-              <Button className="bg-blue-600 hover:bg-blue-700">
+              <Button>
                 Ver Plantoes Disponiveis
               </Button>
             </CardContent>

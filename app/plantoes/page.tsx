@@ -1,17 +1,43 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select } from '@/components/ui/select';
+import { StatusLegend } from '@/components/calendario/StatusLegend';
 import { getPlantoesDisponiveis } from '@/lib/data/mockPlantoes';
 import { formatDate } from '@/lib/utils/date';
-import { Calendar, Clock, MapPin, User, Phone, Search, SlidersHorizontal } from 'lucide-react';
+import { getStatusDisplay, getStatusLabel } from '@/lib/utils/status';
+import { filterPlantoesByStatus, filterPlantoesByLocal, searchPlantoes } from '@/lib/utils/filters';
+import { Calendar, Clock, MapPin, User, Phone, Search } from 'lucide-react';
 
 export default function PlantoesPage() {
-  const plantoes = getPlantoesDisponiveis();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('todos');
+  const [localFilter, setLocalFilter] = useState('');
+
+  // Get plantoes and add status display
+  const allPlantoes = getPlantoesDisponiveis().map((plantao) => ({
+    ...plantao,
+    statusDisplay: getStatusDisplay(plantao),
+  }));
+
+  // Apply filters
+  let filteredPlantoes = allPlantoes;
+  filteredPlantoes = searchPlantoes(filteredPlantoes, searchTerm);
+  filteredPlantoes = filterPlantoesByStatus(filteredPlantoes, statusFilter);
+  filteredPlantoes = filterPlantoesByLocal(filteredPlantoes, localFilter);
+
+  const statusOptions = [
+    { label: 'Todos', value: 'todos' },
+    { label: 'Aberto', value: 'aberto' },
+    { label: 'Futuro', value: 'futuro' },
+    { label: 'Fechado', value: 'fechado' },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -28,20 +54,36 @@ export default function PlantoesPage() {
           </p>
         </div>
 
-        {/* Search and Filter */}
-        <div className="mb-8 flex gap-4">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <Input
-              placeholder="Buscar por título ou descrição..."
-              className="pl-10 h-12 bg-white border-gray-200"
-            />
-          </div>
-          <Button variant="outline" className="h-12 px-6 bg-white border-gray-200">
-            <SlidersHorizontal className="h-5 w-5 mr-2" />
-            Filtros
-          </Button>
-        </div>
+        {/* Search and Filters */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Buscar por título ou descrição..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select
+                value={statusFilter}
+                onChange={setStatusFilter}
+                options={statusOptions}
+                placeholder="Status"
+              />
+              <Input
+                placeholder="Filtrar por local..."
+                value={localFilter}
+                onChange={(e) => setLocalFilter(e.target.value)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Status Legend */}
+        <StatusLegend />
 
         {/* Section Title */}
         <div className="mb-6 flex items-center gap-2">
@@ -51,7 +93,7 @@ export default function PlantoesPage() {
 
         {/* Plantões Grid */}
         <div className="space-y-4">
-          {plantoes.map((plantao) => (
+          {filteredPlantoes.map((plantao) => (
             <Card key={plantao.id} className="bg-white border-gray-200 hover:shadow-md transition-shadow">
               <CardContent className="p-6">
                 <div className="flex items-start justify-between mb-4">
@@ -60,9 +102,9 @@ export default function PlantoesPage() {
                       <h3 className="text-xl font-semibold text-gray-900">
                         {plantao.hospital}
                       </h3>
-                      <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
-                        Aberto
-                      </Badge>
+                      <StatusBadge status={plantao.statusDisplay}>
+                        {getStatusLabel(plantao.statusDisplay)}
+                      </StatusBadge>
                     </div>
 
                     {plantao.descricao && (
@@ -115,7 +157,7 @@ export default function PlantoesPage() {
           ))}
         </div>
 
-        {plantoes.length === 0 && (
+        {filteredPlantoes.length === 0 && (
           <Card className="bg-white border-gray-200">
             <CardContent className="pt-12 pb-12 text-center">
               <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />

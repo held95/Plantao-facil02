@@ -282,10 +282,10 @@ export default function CriarPlantaoPage() {
                 </div>
 
                 {/* Buttons */}
-                <div className="flex gap-4 pt-6 border-t border-gray-200">
+                <div className="flex gap-6 pt-6 border-t border-gray-200">
                   <Button
                     type="submit"
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                    className="flex-1"
                   >
                     Criar Plantao
                   </Button>
@@ -293,7 +293,7 @@ export default function CriarPlantaoPage() {
                     type="button"
                     variant="outline"
                     onClick={handleCancel}
-                    className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50"
+                    className="flex-1"
                   >
                     Cancelar
                   </Button>

@@ -1,0 +1,40 @@
+import type { Coordenador } from '@/types/coordenador';
+
+export const mockCoordenadores: Coordenador[] = [
+  {
+    id: '1',
+    nome: 'Hélder Corrêa',
+    email: 'helder.datacience@gmail.com',
+    telefone: '(11) 98765-4321',
+    crm: 'CRM 123456',
+    especialidade: 'Gerente',
+    hospital: 'Hospital Central',
+    ativo: true,
+    totalPlantoesGerenciados: 45,
+    createdAt: '2025-01-15T10:00:00',
+  },
+  {
+    id: '2',
+    nome: 'robsoncsouza73',
+    email: 'robsoncsouza73@gmail.com',
+    telefone: '(21) 99876-5432',
+    crm: 'CRM 234567',
+    especialidade: 'Coordenador',
+    hospital: 'Hospital São Lucas',
+    ativo: true,
+    totalPlantoesGerenciados: 32,
+    createdAt: '2025-02-01T14:30:00',
+  },
+  {
+    id: '3',
+    nome: 'Prefiro Presentes',
+    email: 'prefiropresentes@gmail.com',
+    telefone: '(31) 97654-3210',
+    crm: 'CRM 345678',
+    especialidade: 'Coordenador',
+    hospital: 'Hospital Santa Maria',
+    ativo: true,
+    totalPlantoesGerenciados: 28,
+    createdAt: '2025-03-10T09:15:00',
+  },
+];

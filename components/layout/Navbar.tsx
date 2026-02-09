@@ -2,17 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Calendar, Plus, FileText, Bell, Users, LogOut } from 'lucide-react';
+import { LayoutDashboard, Calendar, Plus, FileText, Bell, Users, LogOut, ClipboardList, Activity } from 'lucide-react';
 
 export function Navbar() {
   const pathname = usePathname();
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/plantoes', label: 'Plantões', icon: Calendar },
+    { href: '/calendario', label: 'Calendário', icon: Calendar },
     { href: '/criar', label: 'Criar Plantão', icon: Plus },
     { href: '/inscricoes', label: 'Minhas Inscrições', icon: FileText },
     { href: '/notificacoes', label: 'Notificações', icon: Bell },
+    { href: '/gerenciar', label: 'Gerenciar Inscrições', icon: ClipboardList },
+    { href: '/logs', label: 'Logs', icon: Activity },
     { href: '/coordenadores', label: 'Coordenadores', icon: Users },
   ];
 
@@ -22,7 +24,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo and App Name */}
           <Link href="/" className="flex items-center space-x-3">
-            <div className="bg-gradient-to-br from-teal-400 to-cyan-500 p-2 rounded-lg">
+            <div className="bg-gradient-to-br from-slate-600 to-slate-700 p-2 rounded-lg">
               <Calendar className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -34,7 +36,7 @@ export function Navbar() {
           </Link>
 
           {/* Navigation Links */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -43,13 +45,13 @@ export function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center space-x-2 text-sm font-medium transition-colors ${
+                  className={`flex items-center space-x-2 text-sm font-medium transition-all px-3 py-2 rounded-md ${
                     isActive
-                      ? 'text-gray-900'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'bg-slate-700 text-white'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
                 </Link>
               );

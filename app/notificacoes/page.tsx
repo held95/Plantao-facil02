@@ -3,34 +3,32 @@
 import { useState } from 'react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bell, Mail, Smartphone } from 'lucide-react';
+import { Toggle } from '@/components/ui/toggle';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Bell, Mail, Smartphone, MapPin, DollarSign } from 'lucide-react';
 
 export default function NotificacoesPage() {
   const [notificacoes, setNotificacoes] = useState({
     novosPlantoes: true,
     meusPlantoes: true,
+    lembrete24h: true,
+    lembrete1h: false,
+    alteracoes: true,
     email: true,
     app: true,
   });
 
-  const handleToggle = (key: string) => {
-    setNotificacoes(prev => ({ ...prev, [key]: !prev[key] }));
-  };
+  const [filtros, setFiltros] = useState({
+    valorMin: '',
+    valorMax: '',
+    locais: '',
+  });
 
-  const Toggle = ({ enabled, onToggle }: { enabled: boolean; onToggle: () => void }) => (
-    <button
-      onClick={onToggle}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-        enabled ? 'bg-blue-600' : 'bg-gray-300'
-      }`}
-    >
-      <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-          enabled ? 'translate-x-6' : 'translate-x-1'
-        }`}
-      />
-    </button>
-  );
+  const handleSave = () => {
+    console.log('Salvando preferências:', { notificacoes, filtros });
+    alert('Preferências salvas com sucesso!');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -60,25 +58,40 @@ export default function NotificacoesPage() {
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between py-4 border-b border-gray-100">
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900 mb-1">Notificar sobre novos plantões</div>
-                  <div className="text-sm text-gray-600">
-                    Receba alertas quando plantões que correspondem às suas preferências forem criados
-                  </div>
-                </div>
-                <Toggle enabled={notificacoes.novosPlantoes} onToggle={() => handleToggle('novosPlantoes')} />
-              </div>
+              <Toggle
+                enabled={notificacoes.novosPlantoes}
+                onChange={(enabled) => setNotificacoes(prev => ({ ...prev, novosPlantoes: enabled }))}
+                label="Notificar sobre novos plantões"
+                description="Receba alertas quando plantões que correspondem às suas preferências forem criados"
+              />
 
-              <div className="flex items-center justify-between py-4">
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900 mb-1">Notificar sobre meus plantões</div>
-                  <div className="text-sm text-gray-600">
-                    Receba alertas sobre inscrições nos plantões que você criou
-                  </div>
-                </div>
-                <Toggle enabled={notificacoes.meusPlantoes} onToggle={() => handleToggle('meusPlantoes')} />
-              </div>
+              <Toggle
+                enabled={notificacoes.meusPlantoes}
+                onChange={(enabled) => setNotificacoes(prev => ({ ...prev, meusPlantoes: enabled }))}
+                label="Notificar sobre meus plantões"
+                description="Receba alertas sobre inscrições nos plantões que você criou"
+              />
+
+              <Toggle
+                enabled={notificacoes.lembrete24h}
+                onChange={(enabled) => setNotificacoes(prev => ({ ...prev, lembrete24h: enabled }))}
+                label="Lembrete 24h antes do plantão"
+                description="Receba um lembrete um dia antes do seu plantão começar"
+              />
+
+              <Toggle
+                enabled={notificacoes.lembrete1h}
+                onChange={(enabled) => setNotificacoes(prev => ({ ...prev, lembrete1h: enabled }))}
+                label="Lembrete 1h antes do plantão"
+                description="Receba um lembrete uma hora antes do seu plantão começar"
+              />
+
+              <Toggle
+                enabled={notificacoes.alteracoes}
+                onChange={(enabled) => setNotificacoes(prev => ({ ...prev, alteracoes: enabled }))}
+                label="Notificar sobre alterações"
+                description="Receba alertas quando houver mudanças em plantões nos quais você está inscrito"
+              />
             </CardContent>
           </Card>
 
@@ -91,37 +104,87 @@ export default function NotificacoesPage() {
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between py-4 border-b border-gray-100">
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="bg-blue-100 p-2 rounded-lg">
-                    <Mail className="h-5 w-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900 mb-1">Email</div>
-                    <div className="text-sm text-gray-600">
-                      Receber notificações por email em helder.datacience@gmail.com
-                    </div>
-                  </div>
+              <div className="flex items-center gap-4">
+                <div className="bg-gray-100 p-2 rounded-lg">
+                  <Mail className="h-5 w-5 text-gray-600" />
                 </div>
-                <Toggle enabled={notificacoes.email} onToggle={() => handleToggle('email')} />
+                <Toggle
+                  enabled={notificacoes.email}
+                  onChange={(enabled) => setNotificacoes(prev => ({ ...prev, email: enabled }))}
+                  label="Email"
+                  description="Receber notificações por email em helder.datacience@gmail.com"
+                  className="flex-1"
+                />
               </div>
 
-              <div className="flex items-center justify-between py-4">
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="bg-green-100 p-2 rounded-lg">
-                    <Smartphone className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div>
-                    <div className="font-medium text-gray-900 mb-1">Aplicativo</div>
-                    <div className="text-sm text-gray-600">
-                      Receber notificações dentro da aplicação
-                    </div>
-                  </div>
+              <div className="flex items-center gap-4">
+                <div className="bg-gray-100 p-2 rounded-lg">
+                  <Smartphone className="h-5 w-5 text-gray-600" />
                 </div>
-                <Toggle enabled={notificacoes.app} onToggle={() => handleToggle('app')} />
+                <Toggle
+                  enabled={notificacoes.app}
+                  onChange={(enabled) => setNotificacoes(prev => ({ ...prev, app: enabled }))}
+                  label="Aplicativo"
+                  description="Receber notificações dentro da aplicação"
+                  className="flex-1"
+                />
               </div>
             </CardContent>
           </Card>
+
+          {/* Interest Filters */}
+          <Card className="mt-6 bg-white border-gray-200 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg">Filtros de Interesse</CardTitle>
+              <p className="text-sm text-gray-600">
+                Receba notificações apenas de plantões que correspondem aos seus critérios
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-3">
+                  <DollarSign className="inline h-4 w-4 mr-1" />
+                  Faixa de Valor (R$)
+                </label>
+                <div className="grid grid-cols-2 gap-4">
+                  <Input
+                    type="number"
+                    placeholder="Mínimo"
+                    value={filtros.valorMin}
+                    onChange={(e) => setFiltros(prev => ({ ...prev, valorMin: e.target.value }))}
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Máximo"
+                    value={filtros.valorMax}
+                    onChange={(e) => setFiltros(prev => ({ ...prev, valorMax: e.target.value }))}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-900 mb-3">
+                  <MapPin className="inline h-4 w-4 mr-1" />
+                  Locais de Interesse
+                </label>
+                <Input
+                  placeholder="Ex: Hospital Central, Zona Sul"
+                  value={filtros.locais}
+                  onChange={(e) => setFiltros(prev => ({ ...prev, locais: e.target.value }))}
+                />
+                <p className="mt-2 text-xs text-gray-600">
+                  Adicione palavras-chave de locais que você tem interesse
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Save Button */}
+          <div className="mt-6 flex justify-end">
+            <Button onClick={handleSave} size="lg">
+              Salvar Preferências
+            </Button>
+          </div>
         </div>
       </div>
     </div>
