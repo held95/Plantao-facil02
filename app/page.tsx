@@ -1,169 +1,161 @@
+'use client';
+
 import Link from 'next/link';
-import { APP_NAME } from '@/lib/constants';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, DollarSign, Hospital, Users, Clock, MapPin } from 'lucide-react';
+import { Calendar, FileText, Clock, TrendingUp, ArrowRight, Plus } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Navbar />
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center mb-16">
-            <h1 className="text-4xl font-bold text-gray-900 mb-3">
-              {APP_NAME}
-            </h1>
-            <p className="text-xl text-gray-600 mb-2">
-              Encontre Plantões Médicos
-            </p>
-            <p className="text-base text-gray-500">
-              Conecte-se com oportunidades em hospitais de todo o Brasil
-            </p>
-          </div>
+      <div className="container mx-auto px-6 py-8">
+        {/* Welcome Section */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Bem-vindo, Helder Correa
+          </h1>
+          <p className="text-gray-600">
+            Aqui esta um resumo das suas atividades
+          </p>
+        </div>
 
-          {/* Stats Cards */}
-          <div className="grid md:grid-cols-3 gap-6 mb-16">
-            <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="pt-6 text-center">
-                <Hospital className="h-10 w-10 text-blue-600 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900">8</div>
-                <div className="text-sm text-gray-500 mt-1">Plantões Disponíveis</div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="pt-6 text-center">
-                <DollarSign className="h-10 w-10 text-green-600 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900">R$ 800 - R$ 2.000</div>
-                <div className="text-sm text-gray-500 mt-1">Faixa de Valores</div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="pt-6 text-center">
-                <MapPin className="h-10 w-10 text-purple-600 mx-auto mb-3" />
-                <div className="text-2xl font-bold text-gray-900">4</div>
-                <div className="text-sm text-gray-500 mt-1">Cidades Atendidas</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* CTA Card */}
-          <Card className="mb-16 border-gray-200 shadow-sm">
-            <CardContent className="pt-10 pb-10 text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-3">
-                Encontre Seu Próximo Plantão
-              </h2>
-              <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                Navegue por plantões disponíveis em diversas especialidades e hospitais.
-                Inscreva-se de forma rápida e simples.
-              </p>
-
-              <Link href="/plantoes">
-                <Button size="lg" className="px-8">
-                  Ver Plantões Disponíveis
-                </Button>
-              </Link>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardContent className="pt-6 pb-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm font-medium text-gray-600">Plantoes Disponiveis</div>
+                <Calendar className="h-5 w-5 text-blue-600" />
+              </div>
+              <div className="text-3xl font-bold text-gray-900">8</div>
+              <p className="text-xs text-gray-500 mt-1">Plantoes abertos para inscricao</p>
             </CardContent>
           </Card>
 
-          {/* Features Grid */}
-          <div className="grid md:grid-cols-2 gap-6 mb-16">
-            <Card className="border-gray-200 shadow-sm">
-              <CardContent className="pt-6">
-                <Hospital className="h-8 w-8 text-blue-600 mb-3" />
-                <h3 className="font-semibold text-base text-gray-900 mb-2">
-                  Diversos Hospitais
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Plantões em hospitais municipais, regionais e privados de São Paulo e região.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-gray-200 shadow-sm">
-              <CardContent className="pt-6">
-                <Users className="h-8 w-8 text-green-600 mb-3" />
-                <h3 className="font-semibold text-base text-gray-900 mb-2">
-                  Múltiplas Especialidades
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Clínica Geral, Cirurgia, Pediatria, Ortopedia, Cardiologia, Pronto Socorro e mais.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-gray-200 shadow-sm">
-              <CardContent className="pt-6">
-                <Clock className="h-8 w-8 text-purple-600 mb-3" />
-                <h3 className="font-semibold text-base text-gray-900 mb-2">
-                  Horários Flexíveis
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Plantões diurnos, noturnos e de meio período. Escolha o que melhor se encaixa na sua agenda.
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="border-gray-200 shadow-sm">
-              <CardContent className="pt-6">
-                <DollarSign className="h-8 w-8 text-emerald-600 mb-3" />
-                <h3 className="font-semibold text-base text-gray-900 mb-2">
-                  Valores Competitivos
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  Remuneração justa de acordo com especialidade e duração do plantão.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* How it Works */}
-          <div className="bg-gray-50 rounded-lg border border-gray-200 p-8 mb-16">
-            <h2 className="text-2xl font-bold text-center text-gray-900 mb-10">Como Funciona</h2>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-white">1</span>
-                </div>
-                <h3 className="font-semibold text-base text-gray-900 mb-2">Navegue</h3>
-                <p className="text-sm text-gray-600">
-                  Veja todos os plantões disponíveis com detalhes completos
-                </p>
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardContent className="pt-6 pb-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm font-medium text-gray-600">Minhas Inscricoes</div>
+                <FileText className="h-5 w-5 text-green-600" />
               </div>
+              <div className="text-3xl font-bold text-gray-900">3</div>
+              <p className="text-xs text-gray-500 mt-1">Inscricoes ativas</p>
+            </CardContent>
+          </Card>
 
-              <div className="text-center">
-                <div className="bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-white">2</span>
-                </div>
-                <h3 className="font-semibold text-base text-gray-900 mb-2">Inscreva-se</h3>
-                <p className="text-sm text-gray-600">
-                  Candidate-se ao plantão que se encaixa na sua especialidade
-                </p>
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardContent className="pt-6 pb-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm font-medium text-gray-600">Horas Trabalhadas</div>
+                <Clock className="h-5 w-5 text-purple-600" />
               </div>
+              <div className="text-3xl font-bold text-gray-900">72</div>
+              <p className="text-xs text-gray-500 mt-1">Total este mes</p>
+            </CardContent>
+          </Card>
 
-              <div className="text-center">
-                <div className="bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                  <span className="text-2xl font-bold text-white">3</span>
-                </div>
-                <h3 className="font-semibold text-base text-gray-900 mb-2">Confirme</h3>
-                <p className="text-sm text-gray-600">
-                  Receba confirmação e detalhes do plantão por email
-                </p>
+          <Card className="bg-white border-gray-200 shadow-sm">
+            <CardContent className="pt-6 pb-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-sm font-medium text-gray-600">Este Mes</div>
+                <TrendingUp className="h-5 w-5 text-emerald-600" />
               </div>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="text-center text-gray-400 text-xs border-t border-gray-200 pt-8">
-            <p>Versão 1.0.0 • Plataforma de Gestão de Plantões Médicos</p>
-          </div>
+              <div className="text-3xl font-bold text-gray-900">R$ 9.600</div>
+              <p className="text-xs text-gray-500 mt-1">Valor total estimado</p>
+            </CardContent>
+          </Card>
         </div>
+
+        {/* Action Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Ver Plantoes Disponiveis */}
+          <Link href="/plantoes">
+            <Card className="bg-gradient-to-br from-blue-500 to-blue-600 border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer group">
+              <CardContent className="pt-8 pb-8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold text-white mb-2">
+                      Ver Plantoes Disponiveis
+                    </h3>
+                    <p className="text-blue-100 text-sm mb-4">
+                      Navegue por plantoes abertos e se inscreva
+                    </p>
+                    <Button
+                      variant="secondary"
+                      className="bg-white text-blue-600 hover:bg-blue-50"
+                    >
+                      Ver Plantoes
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Calendar className="h-16 w-16 text-blue-200 group-hover:scale-110 transition-transform" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {/* Criar Novo Plantao */}
+          <Link href="/criar">
+            <Card className="bg-gradient-to-br from-green-500 to-green-600 border-0 shadow-lg hover:shadow-xl transition-all cursor-pointer group">
+              <CardContent className="pt-8 pb-8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold text-white mb-2">
+                      Criar Novo Plantao
+                    </h3>
+                    <p className="text-green-100 text-sm mb-4">
+                      Publique um novo plantao para sua equipe
+                    </p>
+                    <Button
+                      variant="secondary"
+                      className="bg-white text-green-600 hover:bg-green-50"
+                    >
+                      Criar Plantao
+                      <Plus className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                  <Plus className="h-16 w-16 text-green-200 group-hover:scale-110 transition-transform" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+
+        {/* Quick Links */}
+        <Card className="bg-white border-gray-200 shadow-sm">
+          <CardContent className="pt-6 pb-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Acesso Rapido</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Link href="/inscricoes">
+                <Button variant="outline" className="w-full justify-start border-gray-200 hover:bg-gray-50">
+                  <FileText className="mr-2 h-4 w-4" />
+                  Minhas Inscricoes
+                </Button>
+              </Link>
+              <Link href="/notificacoes">
+                <Button variant="outline" className="w-full justify-start border-gray-200 hover:bg-gray-50">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Notificacoes
+                </Button>
+              </Link>
+              <Link href="/coordenadores">
+                <Button variant="outline" className="w-full justify-start border-gray-200 hover:bg-gray-50">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Coordenadores
+                </Button>
+              </Link>
+              <Link href="/plantoes">
+                <Button variant="outline" className="w-full justify-start border-gray-200 hover:bg-gray-50">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Todos os Plantoes
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
