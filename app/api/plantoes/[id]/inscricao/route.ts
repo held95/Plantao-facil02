@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { emailService } from '@/lib/email/emailService';
 import { mockPlantoes } from '@/lib/data/mockPlantoes';
 
 // POST /api/plantoes/[id]/inscricao - Register for a plantão
@@ -58,23 +57,8 @@ export async function POST(
     // - Update vagasDisponiveis
     // - Create notification
 
-    // Send confirmation email to doctor (fail gracefully)
-    try {
-      const emailResult = await emailService.sendInscricaoConfirmadaEmail(
-        session.user.email!,
-        session.user.name || 'Médico',
-        plantao
-      );
-
-      if (emailResult.success) {
-        console.log('✅ Email confirmation sent to doctor');
-      } else {
-        console.warn('⚠️ Failed to send email confirmation:', emailResult.error);
-      }
-    } catch (emailError) {
-      // Log error but don't fail the request
-      console.error('❌ Unexpected error sending email:', emailError);
-    }
+    // Email notifications disabled for stability
+    console.log('📧 Email notifications disabled - inscription successful');
 
     return NextResponse.json(
       {

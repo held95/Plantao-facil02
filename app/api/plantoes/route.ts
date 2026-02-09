@@ -5,7 +5,6 @@ import {
   validatePlantaoForm,
   formatPlantaoForSubmission,
 } from '@/lib/validation/plantaoValidation';
-import { emailService } from '@/lib/email/emailService';
 
 // GET /api/plantoes - Get all plantões
 export async function GET(request: NextRequest) {
@@ -69,23 +68,8 @@ export async function POST(request: NextRequest) {
 
     // In production: Save to database
 
-    // Send confirmation email to coordinator (fail gracefully)
-    try {
-      const emailResult = await emailService.sendPlantaoCriadoEmail(
-        session.user.email!,
-        session.user.name || 'Coordenador',
-        newPlantao
-      );
-
-      if (emailResult.success) {
-        console.log('✅ Email confirmation sent to coordinator');
-      } else {
-        console.warn('⚠️ Failed to send email confirmation:', emailResult.error);
-      }
-    } catch (emailError) {
-      // Log error but don't fail the request
-      console.error('❌ Unexpected error sending email:', emailError);
-    }
+    // Email notifications disabled for stability
+    console.log('📧 Email notifications disabled - plantão created successfully');
 
     // Return the created plantão
     return NextResponse.json(
