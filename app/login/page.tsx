@@ -23,15 +23,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-slate-600 to-slate-700">
-            <Calendar className="h-8 w-8 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 flex items-center justify-center px-6 py-12">
+      <Card className="w-full max-w-md shadow-2xl border-0">
+        <CardHeader className="text-center space-y-6 pb-8">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 shadow-lg ring-4 ring-slate-100">
+            <Calendar className="h-10 w-10 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Plantão Fácil</h1>
-            <p className="text-sm text-gray-600 mt-1">Faça login para continuar</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Plantão Fácil</h1>
+            <p className="text-base text-gray-600">Faça login para continuar</p>
           </div>
         </CardHeader>
 
@@ -39,7 +39,7 @@ export default function LoginPage() {
           {/* Google Login Button */}
           <Button
             variant="outline"
-            className="w-full"
+            className="w-full h-12 border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm hover:shadow-md"
             onClick={handleGoogleLogin}
           >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -74,9 +74,9 @@ export default function LoginPage() {
           </div>
 
           {/* Email/Password Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-900">
+              <label htmlFor="email" className="text-sm font-semibold text-gray-700">
                 Email
               </label>
               <Input
@@ -85,12 +85,13 @@ export default function LoginPage() {
                 placeholder="seu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="h-12 border-2 border-gray-200 focus:border-slate-600 transition-colors"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-gray-900">
+              <label htmlFor="password" className="text-sm font-semibold text-gray-700">
                 Senha
               </label>
               <Input
@@ -99,29 +100,37 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="h-12 border-2 border-gray-200 focus:border-slate-600 transition-colors"
                 required
               />
             </div>
 
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full h-12 text-base font-semibold bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-800 hover:to-slate-900 shadow-md hover:shadow-lg transition-all">
               Entrar
             </Button>
           </form>
 
           {/* Footer Links */}
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between text-sm pt-2">
             <Link
               href="/forgot-password"
-              className="text-slate-700 hover:text-slate-900 hover:underline"
+              className="text-slate-600 hover:text-slate-900 font-medium hover:underline transition-colors"
             >
               Esqueceu a senha?
             </Link>
             <Link
               href="/signup"
-              className="text-slate-700 hover:text-slate-900 hover:underline"
+              className="text-slate-600 hover:text-slate-900 font-medium hover:underline transition-colors"
             >
               Criar conta
             </Link>
+          </div>
+
+          {/* Security Note */}
+          <div className="pt-4 border-t border-gray-200">
+            <p className="text-center text-xs text-gray-500">
+              🔒 Seus dados estão protegidos e seguros
+            </p>
           </div>
         </CardContent>
       </Card>
