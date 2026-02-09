@@ -8,8 +8,8 @@ const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: APP_NAME,
-  description: 'Sistema de gerenciamento de documentos médicos processados por OCR',
-  keywords: ['medical', 'ocr', 'documents', 'surgical reports', 'healthcare'],
+  description: 'Plataforma para encontrar e gerenciar plantões médicos em hospitais de todo o Brasil',
+  keywords: ['plantão médico', 'plantões', 'hospitais', 'vagas médicas', 'turnos médicos'],
 };
 
 export default function RootLayout({
