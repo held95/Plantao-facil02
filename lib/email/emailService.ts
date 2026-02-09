@@ -4,8 +4,15 @@ import { render } from '@react-email/render';
 import PlantaoCriadoEmail from '@/emails/PlantaoCriadoEmail';
 import InscricaoConfirmadaEmail from '@/emails/InscricaoConfirmadaEmail';
 
-// Initialize Resend client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy initialization to avoid build-time errors
+let resendInstance: Resend | null = null;
+
+function getResendClient(): Resend {
+  if (!resendInstance) {
+    resendInstance = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resendInstance;
+}
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 const REPLY_TO = process.env.RESEND_REPLY_TO || 'suporte@plantaofacil.com';
@@ -50,6 +57,7 @@ export const emailService = {
         })
       );
 
+      const resend = getResendClient();
       const { data, error } = await resend.emails.send({
         from: FROM_EMAIL,
         to: coordenadorEmail,
@@ -103,6 +111,7 @@ export const emailService = {
         })
       );
 
+      const resend = getResendClient();
       const { data, error } = await resend.emails.send({
         from: FROM_EMAIL,
         to: medicoEmail,
