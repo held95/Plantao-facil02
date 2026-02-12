@@ -1,5 +1,5 @@
 import { Plantao } from '@/types/plantao';
-import { formatDate, formatTime } from '@/lib/utils/date';
+import { formatDate } from '@/lib/utils/date';
 import type { SMSTemplate } from '@/types/sms';
 
 /**
@@ -34,7 +34,7 @@ export function getPlantaoCriadoMessage(
   coordenadorNome: string,
   plantao: Plantao
 ): SMSTemplate {
-  const data = formatDate(plantao.data, 'short'); // dd/MM
+  const data = formatDate(plantao.data); // dd/MM
   const horario = `${plantao.horarioInicio}-${plantao.horarioFim}`;
 
   const message = `✅ Plantão criado! ${plantao.hospital} - ${plantao.especialidade}. ${data} às ${horario}. Acesse: ${APP_URL}`;
@@ -53,7 +53,7 @@ export function getInscricaoConfirmadaMessage(
   medicoNome: string,
   plantao: Plantao
 ): SMSTemplate {
-  const data = formatDate(plantao.data, 'short');
+  const data = formatDate(plantao.data);
   const horario = plantao.horarioInicio;
 
   const message = `🎉 Inscrição confirmada! ${plantao.hospital} em ${data} às ${horario}. Boa sorte, Dr(a). ${medicoNome}!`;
@@ -111,7 +111,7 @@ export function getPlantaoCanceladoMessage(
   plantao: Plantao,
   motivo?: string
 ): SMSTemplate {
-  const data = formatDate(plantao.data, 'short');
+  const data = formatDate(plantao.data);
 
   let message = `❌ Plantão cancelado: ${plantao.hospital} em ${data}.`;
 
@@ -137,7 +137,7 @@ export function getPlantaoAtualizadoMessage(
   plantao: Plantao,
   mudancas: string
 ): SMSTemplate {
-  const data = formatDate(plantao.data, 'short');
+  const data = formatDate(plantao.data);
 
   const message = `📝 Plantão atualizado: ${plantao.hospital} (${data}). ${mudancas}. Verifique: ${APP_URL}`;
 
