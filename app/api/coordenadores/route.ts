@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     if (hospital) {
       filteredCoordenadores = filteredCoordenadores.filter(
-        coord => coord.hospital.toLowerCase().includes(hospital.toLowerCase())
+        coord => coord.hospital?.toLowerCase().includes(hospital.toLowerCase())
       );
     }
 
