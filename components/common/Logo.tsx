@@ -87,12 +87,12 @@ export function Logo({
     <div className={`flex items-center ${className}`}>
       <Image
         src={logoPath}
-        alt="Plantão Fácil"
-        height={logoHeight}
-        width={logoHeight * 3} // Assume 3:1 aspect ratio
+        alt="Plantão Fácil - ProTime"
+        height={logoHeight * 3} // 3x for high DPI displays (120px actual, renders at 40px)
+        width={logoHeight * 3} // Square aspect ratio (1:1) for ProTime logo
         onError={handleImageError}
         priority
-        style={{ height: logoHeight, width: 'auto' }}
+        style={{ height: logoHeight, width: logoHeight, objectFit: 'contain' }}
       />
     </div>
   );
