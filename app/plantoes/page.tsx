@@ -9,19 +9,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { StatusLegend } from '@/components/calendario/StatusLegend';
-import { getPlantoesDisponiveis } from '@/lib/data/mockPlantoes';
+import { mockPlantoes } from '@/lib/data/mockPlantoes';
 import { formatDate } from '@/lib/utils/date';
 import { getStatusDisplay, getStatusLabel } from '@/lib/utils/status';
 import { filterPlantoesByStatus, filterPlantoesByLocal, searchPlantoes } from '@/lib/utils/filters';
 import { Calendar, Clock, MapPin, User, Phone, Search } from 'lucide-react';
+import { usePlantaoStore } from '@/stores/plantaoStore';
+import type { Plantao } from '@/types/plantao';
 
 export default function PlantoesPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('todos');
   const [localFilter, setLocalFilter] = useState('');
+  const { plantoes: storedPlantoes } = usePlantaoStore();
 
-  // Get plantoes and add status display
-  const allPlantoes = getPlantoesDisponiveis().map((plantao) => ({
+  // Combinar mock + plantoes criados pelo usuario, apenas disponiveis
+  const disponiveis: Plantao[] = [
+    ...mockPlantoes,
+    ...storedPlantoes.filter((sp) => !mockPlantoes.some((mp) => mp.id === sp.id)),
+  ].filter((p) => p.status === 'disponivel' && p.vagasDisponiveis > 0);
+
+  const allPlantoes = disponiveis.map((plantao) => ({
     ...plantao,
     statusDisplay: getStatusDisplay(plantao),
   }));
@@ -44,24 +52,22 @@ export default function PlantoesPage() {
       <Navbar />
 
       <div className="container mx-auto px-6 py-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Plantões Disponíveis
+            Plantoes Disponiveis
           </h1>
           <p className="text-gray-600">
-            Escolha e se inscreva nos plantões disponíveis
+            Escolha e se inscreva nos plantoes disponiveis
           </p>
         </div>
 
-        {/* Search and Filters */}
         <Card className="mb-6">
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Buscar por título ou descrição..."
+                  placeholder="Buscar por titulo ou descricao..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -82,16 +88,13 @@ export default function PlantoesPage() {
           </CardContent>
         </Card>
 
-        {/* Status Legend */}
         <StatusLegend />
 
-        {/* Section Title */}
         <div className="mb-6 flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-700" />
-          <h2 className="text-xl font-semibold text-gray-900">Plantões Abertos</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Plantoes Abertos</h2>
         </div>
 
-        {/* Plantões Grid */}
         <div className="space-y-4">
           {filteredPlantoes.map((plantao) => (
             <Card key={plantao.id} className="bg-white border-gray-200 hover:shadow-md transition-shadow">
@@ -108,9 +111,7 @@ export default function PlantoesPage() {
                     </div>
 
                     {plantao.descricao && (
-                      <p className="text-gray-600 text-sm mb-4">
-                        {plantao.descricao}
-                      </p>
+                      <p className="text-gray-600 text-sm mb-4">{plantao.descricao}</p>
                     )}
 
                     <div className="grid grid-cols-2 gap-4 text-sm mb-4">
@@ -118,27 +119,22 @@ export default function PlantoesPage() {
                         <Calendar className="h-4 w-4 text-gray-500" />
                         <span>{formatDate(plantao.data)}</span>
                       </div>
-
                       <div className="flex items-center gap-2 text-gray-700">
                         <Clock className="h-4 w-4 text-gray-500" />
                         <span>{plantao.horarioInicio} - {plantao.horarioFim}</span>
                       </div>
-
                       <div className="flex items-center gap-2 text-gray-700">
                         <MapPin className="h-4 w-4 text-gray-500" />
                         <span>{plantao.cidade}, {plantao.estado}</span>
                       </div>
-
                       <div className="flex items-center gap-2 text-gray-700">
                         <User className="h-4 w-4 text-gray-500" />
                         <span>Dr. Coordenador</span>
                       </div>
-
                       <div className="flex items-center gap-2 text-gray-700">
                         <Phone className="h-4 w-4 text-gray-500" />
                         <span>(11) 99999-9999</span>
                       </div>
-
                       <div className="flex items-center gap-2 text-gray-700">
                         <User className="h-4 w-4 text-gray-500" />
                         <span>0 / {plantao.vagasTotal} inscritos</span>
@@ -147,7 +143,7 @@ export default function PlantoesPage() {
 
                     <Link href={`/plantoes/${plantao.id}`}>
                       <Button className="w-full bg-slate-700 hover:bg-slate-800 text-white">
-                        Me inscrever para o plantão
+                        Me inscrever para o plantao
                       </Button>
                     </Link>
                   </div>
@@ -162,11 +158,9 @@ export default function PlantoesPage() {
             <CardContent className="pt-12 pb-12 text-center">
               <Calendar className="h-16 w-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Nenhum plantão disponível no momento
+                Nenhum plantao disponivel no momento
               </h3>
-              <p className="text-gray-600">
-                Novos plantões serão publicados em breve.
-              </p>
+              <p className="text-gray-600">Novos plantoes serao publicados em breve.</p>
             </CardContent>
           </Card>
         )}

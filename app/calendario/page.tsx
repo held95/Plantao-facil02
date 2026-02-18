@@ -17,6 +17,7 @@ import {
 import { filterPlantoesByLocal, filterPlantoesByStatus } from '@/lib/utils/filters';
 import { getStatusDisplay } from '@/lib/utils/status';
 import { mockPlantoes } from '@/lib/data/mockPlantoes';
+import { usePlantaoStore } from '@/stores/plantaoStore';
 
 export default function CalendarioPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -25,8 +26,14 @@ export default function CalendarioPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
+  // Combinar mock + plantoes criados (Zustand store)
+  const { plantoes: storedPlantoes } = usePlantaoStore();
+  const todosPlantoes = [
+    ...mockPlantoes,
+    ...storedPlantoes.filter(sp => !mockPlantoes.some(mp => mp.id === sp.id)),
+  ];
   // Add statusDisplay to plantões
-  const plantoesWithStatus = mockPlantoes.map((plantao) => ({
+  const plantoesWithStatus = todosPlantoes.map((plantao) => ({
     ...plantao,
     statusDisplay: getStatusDisplay(plantao),
   }));
