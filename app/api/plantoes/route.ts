@@ -71,18 +71,22 @@ export async function POST(request: NextRequest) {
 
     // In production: Save to database
 
-    // Notificações para TODOS os usuários cadastrados — fire-and-forget
-    // Não bloqueia a resposta 201
+    // Notificações para TODOS os usuários cadastrados
+    // IMPORTANTE: Na Vercel (serverless), funções encerram após o retorno da resposta.
+    // Por isso usamos await — garante que SMS e email são enviados antes do 201.
+    try {
+      const phones = await getUsersEligibleForSMS();
+      await awsSnsService.sendPlantaoCriadoSMSToAll(phones, newPlantao);
+    } catch (err) {
+      console.error('❌ Erro ao enviar SMS:', err);
+    }
 
-    // SMS via AWS SNS: envia para todos com opt-in e telefone válido
-    getUsersEligibleForSMS()
-      .then((phones) => awsSnsService.sendPlantaoCriadoSMSToAll(phones, newPlantao))
-      .catch((err) => console.error('❌ Erro ao enviar SMS em massa:', err));
-
-    // Email via Resend: envia para todos com opt-in (usa emailNotificacao se disponível)
-    getUsersEligibleForEmail()
-      .then((recipients) => emailService.sendPlantaoCriadoEmailToAll(recipients, newPlantao))
-      .catch((err) => console.error('❌ Erro ao enviar emails em massa:', err));
+    try {
+      const recipients = await getUsersEligibleForEmail();
+      await emailService.sendPlantaoCriadoEmailToAll(recipients, newPlantao);
+    } catch (err) {
+      console.error('❌ Erro ao enviar emails:', err);
+    }
 
     // Return the created plantão
     return NextResponse.json(
