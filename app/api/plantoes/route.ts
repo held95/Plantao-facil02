@@ -5,7 +5,7 @@ import {
   validatePlantaoForm,
   formatPlantaoForSubmission,
 } from '@/lib/validation/plantaoValidation';
-import { emailService } from '@/lib/email/emailService';
+import { awsSesService } from '@/lib/email/awsSesService';
 import { awsSnsService } from '@/lib/sms/awsSnsService';
 import { getUsersEligibleForSMS, getUsersEligibleForEmail } from '@/lib/sms/notificationHelpers';
 
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     try {
       const recipients = await getUsersEligibleForEmail();
-      await emailService.sendPlantaoCriadoEmailToAll(recipients, newPlantao);
+      await awsSesService.sendPlantaoCriadoEmailToAll(recipients, newPlantao);
     } catch (err) {
       console.error('❌ Erro ao enviar emails:', err);
     }
