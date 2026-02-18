@@ -167,6 +167,45 @@ export const emailService = {
   },
 
   /**
+   * Envia email de novo plantão para TODOS os usuários elegíveis via Resend.
+   * Usa emailNotificacao se disponível; fallback para email de login.
+   */
+  async sendPlantaoCriadoEmailToAll(
+    recipients: { nome: string; email: string }[],
+    plantao: Plantao
+  ): Promise<{ sent: number; failed: number }> {
+    const result = { sent: 0, failed: 0 };
+
+    if (!EMAIL_ENABLED) {
+      console.log('📧 Email desabilitado (ENABLE_EMAIL_NOTIFICATIONS != true).');
+      return result;
+    }
+
+    if (recipients.length === 0) {
+      console.log('📧 Nenhum usuário elegível para email.');
+      return result;
+    }
+
+    console.log(`📤 Enviando emails via Resend para ${recipients.length} usuário(s)...`);
+
+    for (const recipient of recipients) {
+      const emailResult = await this.sendPlantaoCriadoEmail(
+        recipient.email,
+        recipient.nome,
+        plantao
+      );
+      if (emailResult.success) {
+        result.sent++;
+      } else {
+        result.failed++;
+      }
+    }
+
+    console.log(`📊 Emails enviados: ${result.sent} sucesso, ${result.failed} falha(s)`);
+    return result;
+  },
+
+  /**
    * Send reminder email 24 hours before plantão
    */
   async sendLembrete24h(

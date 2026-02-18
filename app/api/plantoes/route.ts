@@ -5,7 +5,7 @@ import {
   validatePlantaoForm,
   formatPlantaoForSubmission,
 } from '@/lib/validation/plantaoValidation';
-import { awsSesService } from '@/lib/email/awsSesService';
+import { emailService } from '@/lib/email/emailService';
 import { awsSnsService } from '@/lib/sms/awsSnsService';
 import { getUsersEligibleForSMS, getUsersEligibleForEmail } from '@/lib/sms/notificationHelpers';
 
@@ -79,9 +79,9 @@ export async function POST(request: NextRequest) {
       .then((phones) => awsSnsService.sendPlantaoCriadoSMSToAll(phones, newPlantao))
       .catch((err) => console.error('❌ Erro ao enviar SMS em massa:', err));
 
-    // Email via AWS SES: envia para todos com opt-in (usa emailNotificacao se disponível)
+    // Email via Resend: envia para todos com opt-in (usa emailNotificacao se disponível)
     getUsersEligibleForEmail()
-      .then((recipients) => awsSesService.sendPlantaoCriadoEmailToAll(recipients, newPlantao))
+      .then((recipients) => emailService.sendPlantaoCriadoEmailToAll(recipients, newPlantao))
       .catch((err) => console.error('❌ Erro ao enviar emails em massa:', err));
 
     // Return the created plantão

@@ -113,17 +113,14 @@ export const awsSnsService = {
       }
 
       // Send SMS via AWS SNS
+      // Nota: SenderID nao e suportado no Brasil — removido para evitar erro
       const command = new PublishCommand({
         PhoneNumber: toPhone,
         Message: template.body,
         MessageAttributes: {
-          'AWS.SNS.SMS.SenderID': {
-            DataType: 'String',
-            StringValue: 'PlantaoFacil', // Optional: Custom sender ID (max 11 chars)
-          },
           'AWS.SNS.SMS.SMSType': {
             DataType: 'String',
-            StringValue: 'Transactional', // Transactional messages have higher priority
+            StringValue: 'Transactional',
           },
         },
       });
