@@ -105,7 +105,7 @@ export const smsService = {
       }
 
       // Generate SMS message
-      const template = getPlantaoCriadoMessage(coordenadorNome, plantao);
+      const template = getPlantaoCriadoMessage(plantao);
 
       // Log if message is multi-part (will cost more)
       if (template.isMultiPart) {

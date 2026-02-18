@@ -18,6 +18,7 @@ export interface User {
   id: string;
   nome: string;
   email: string;
+  emailNotificacao?: string; // Email para receber alertas (pode ser diferente do email de login)
   telefone?: string;
   crm?: string;
   especialidade?: string;

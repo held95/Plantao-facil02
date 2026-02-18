@@ -103,7 +103,7 @@ export const awsSnsService = {
       }
 
       // Generate SMS message
-      const template = getPlantaoCriadoMessage(coordenadorNome, plantao);
+      const template = getPlantaoCriadoMessage(plantao);
 
       // Log if message is multi-part
       if (template.isMultiPart) {
@@ -225,6 +225,50 @@ export const awsSnsService = {
         errorCode: error.code,
       };
     }
+  },
+
+  /**
+   * Envia SMS de novo plantão para TODOS os usuários elegíveis (batch).
+   * Custo-otimizado: deduplicação de números, respeitando opt-in.
+   *
+   * @param phones - Lista de telefones já no formato E.164
+   * @param plantao - Dados do plantão criado
+   */
+  async sendPlantaoCriadoSMSToAll(
+    phones: string[],
+    plantao: Plantao
+  ): Promise<{ sent: number; failed: number }> {
+    const result = { sent: 0, failed: 0 };
+
+    if (!SMS_ENABLED) {
+      console.log('📱 SMS desabilitado (ENABLE_SMS_NOTIFICATIONS != true).');
+      return result;
+    }
+
+    if (phones.length === 0) {
+      console.log('📱 Nenhum usuário elegível para SMS.');
+      return result;
+    }
+
+    const template = getPlantaoCriadoMessage(plantao);
+
+    if (template.isMultiPart) {
+      console.warn(`⚠️ SMS tem ${template.length} chars (>160) — custo extra. Verifique o template.`);
+    }
+
+    console.log(`📤 Enviando SMS para ${phones.length} usuário(s)...`);
+
+    for (const phone of phones) {
+      const singleResult = await this.sendPlantaoCriadoSMS(phone, '', plantao);
+      if (singleResult.success) {
+        result.sent++;
+      } else {
+        result.failed++;
+      }
+    }
+
+    console.log(`📊 SMS enviados: ${result.sent} sucesso, ${result.failed} falha(s)`);
+    return result;
   },
 
   /**

@@ -7,6 +7,7 @@ import {
 } from '@/lib/validation/plantaoValidation';
 import { awsSesService } from '@/lib/email/awsSesService';
 import { awsSnsService } from '@/lib/sms/awsSnsService';
+import { getUsersEligibleForSMS, getUsersEligibleForEmail } from '@/lib/sms/notificationHelpers';
 
 // GET /api/plantoes - Get all plantões
 export async function GET(request: NextRequest) {
@@ -70,50 +71,18 @@ export async function POST(request: NextRequest) {
 
     // In production: Save to database
 
-    // Send notifications (email and SMS) to coordinator via AWS
-    // These run asynchronously and don't block the response
-    if (session.user?.email && session.user?.name) {
-      // Send email notification via AWS SES
-      awsSesService
-        .sendPlantaoCriadoEmail(
-          session.user.email,
-          session.user.name,
-          newPlantao
-        )
-        .then((result) => {
-          if (result.success) {
-            console.log('✅ Email sent via AWS SES:', result.messageId);
-          } else {
-            console.error('❌ Failed to send email:', result.error);
-          }
-        })
-        .catch((error) => {
-          console.error('❌ Email send error:', error);
-        });
+    // Notificações para TODOS os usuários cadastrados — fire-and-forget
+    // Não bloqueia a resposta 201
 
-      // Send SMS notification via AWS SNS (if phone number is available)
-      const coordenadorPhone = (session.user as any).telefone;
-      if (coordenadorPhone) {
-        awsSnsService
-          .sendPlantaoCriadoSMS(
-            coordenadorPhone,
-            session.user.name,
-            newPlantao
-          )
-          .then((result) => {
-            if (result.success) {
-              console.log('✅ SMS sent via AWS SNS:', result.messageId);
-            } else {
-              console.error('❌ Failed to send SMS:', result.error);
-            }
-          })
-          .catch((error) => {
-            console.error('❌ SMS send error:', error);
-          });
-      } else {
-        console.warn('⚠️ Coordinator phone number not available for SMS');
-      }
-    }
+    // SMS via AWS SNS: envia para todos com opt-in e telefone válido
+    getUsersEligibleForSMS()
+      .then((phones) => awsSnsService.sendPlantaoCriadoSMSToAll(phones, newPlantao))
+      .catch((err) => console.error('❌ Erro ao enviar SMS em massa:', err));
+
+    // Email via AWS SES: envia para todos com opt-in (usa emailNotificacao se disponível)
+    getUsersEligibleForEmail()
+      .then((recipients) => awsSesService.sendPlantaoCriadoEmailToAll(recipients, newPlantao))
+      .catch((err) => console.error('❌ Erro ao enviar emails em massa:', err));
 
     // Return the created plantão
     return NextResponse.json(

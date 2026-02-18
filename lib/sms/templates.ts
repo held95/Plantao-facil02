@@ -24,20 +24,17 @@ function createTemplate(body: string): SMSTemplate {
 }
 
 /**
- * SMS when coordinator creates a plantão
+ * SMS de alerta de novo plantão para todos os usuários cadastrados.
+ * Formato curto e direto: especialidade, data, horário e valor.
  *
- * @param coordenadorNome - Coordinator name
- * @param plantao - Plantão data
- * @returns SMS template
+ * @param plantao - Dados do plantão criado
+ * @returns SMS template (≤160 chars para custo mínimo)
  */
-export function getPlantaoCriadoMessage(
-  coordenadorNome: string,
-  plantao: Plantao
-): SMSTemplate {
+export function getPlantaoCriadoMessage(plantao: Plantao): SMSTemplate {
   const data = formatDate(plantao.data); // dd/MM
-  const horario = `${plantao.horarioInicio}-${plantao.horarioFim}`;
+  const valor = plantao.valor ? ` | R$${plantao.valor}` : '';
 
-  const message = `✅ Plantão criado! ${plantao.hospital} - ${plantao.especialidade}. ${data} às ${horario}. Acesse: ${APP_URL}`;
+  const message = `Novo plantao! ${plantao.especialidade} - ${plantao.hospital} | Dia: ${data} | ${plantao.horarioInicio}-->${plantao.horarioFim}${valor}`;
 
   return createTemplate(message);
 }
