@@ -3,7 +3,18 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import { LayoutDashboard, Calendar, Plus, FileText, Bell, Users, LogOut, ClipboardList, Activity } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Calendar,
+  Plus,
+  FileText,
+  Bell,
+  Users,
+  LogOut,
+  ClipboardList,
+  Activity,
+  UserCheck,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { NotificationDropdown } from '@/components/layout/NotificationDropdown';
 import { useNotificationStore } from '@/stores/notificationStore';
@@ -16,23 +27,28 @@ export function Navbar() {
   const user = session?.user;
   const { unreadCount, toggleDropdown } = useNotificationStore();
 
-  // Iniciar polling de notificações
   useNotifications();
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/calendario', label: 'Calendário', icon: Calendar },
-    { href: '/criar', label: 'Criar Plantão', icon: Plus },
-    { href: '/inscricoes', label: 'Minhas Inscrições', icon: FileText },
-    { href: '/notificacoes', label: 'Notificações', icon: Bell },
-    { href: '/gerenciar', label: 'Gerenciar Inscrições', icon: ClipboardList },
+    { href: '/calendario', label: 'Calendario', icon: Calendar },
+    { href: '/criar', label: 'Criar Plantao', icon: Plus },
+    { href: '/inscricoes', label: 'Minhas Inscricoes', icon: FileText },
+    { href: '/notificacoes', label: 'Notificacoes', icon: Bell },
+    { href: '/gerenciar', label: 'Gerenciar Inscricoes', icon: ClipboardList },
+    { href: '/gerenciar/aprovacoes', label: 'Aprovar Contas', icon: UserCheck },
     { href: '/logs', label: 'Logs', icon: Activity },
     { href: '/coordenadores', label: 'Coordenadores', icon: Users },
   ];
 
-  // Filtrar nav items baseado no role do usuário
-  const coordinatorOnlyPages = ['/criar', '/logs', '/coordenadores'];
-  const filteredNavItems = navItems.filter(item => {
+  const coordinatorOnlyPages = [
+    '/criar',
+    '/logs',
+    '/coordenadores',
+    '/gerenciar',
+    '/gerenciar/aprovacoes',
+  ];
+  const filteredNavItems = navItems.filter((item) => {
     if (coordinatorOnlyPages.includes(item.href)) {
       return user?.role === 'coordenador' || user?.role === 'admin';
     }
@@ -43,14 +59,14 @@ export function Navbar() {
     <nav className="bg-white border-b border-gray-200">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Logo and App Name */}
           <Logo variant="main" linkToHome={true} />
 
-          {/* Navigation Links */}
           <div className="flex items-center space-x-2">
             {filteredNavItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+              const isActive =
+                pathname === item.href ||
+                (item.href !== '/' && pathname.startsWith(item.href));
 
               return (
                 <Link
@@ -69,14 +85,12 @@ export function Navbar() {
             })}
           </div>
 
-          {/* User Menu */}
           <div className="flex items-center space-x-4">
-            {/* Bell Icon with Badge and Dropdown */}
             <div className="relative">
               <button
                 className="p-2 text-gray-600 hover:text-gray-900 transition-colors relative"
                 onClick={toggleDropdown}
-                aria-label="Notificações"
+                aria-label="Notificacoes"
                 aria-describedby="unread-count"
               >
                 <Bell className="h-5 w-5" />
@@ -89,7 +103,7 @@ export function Navbar() {
                   </Badge>
                 )}
                 <span id="unread-count" className="sr-only">
-                  {unreadCount} notificações não lidas
+                  {unreadCount} notificacoes nao lidas
                 </span>
               </button>
               <NotificationDropdown />
@@ -105,9 +119,15 @@ export function Navbar() {
             ) : (
               <div className="flex items-center space-x-3">
                 <div className="text-right">
-                  <div className="text-sm font-medium text-gray-900">{user?.name || 'Usuário'}</div>
+                  <div className="text-sm font-medium text-gray-900">
+                    {user?.name || 'Usuario'}
+                  </div>
                   <div className="text-xs text-gray-500">
-                    {user?.role === 'coordenador' ? 'Coordenador' : user?.role === 'admin' ? 'Admin' : 'Médico'}
+                    {user?.role === 'coordenador'
+                      ? 'Coordenador'
+                      : user?.role === 'admin'
+                        ? 'Admin'
+                        : 'Medico'}
                   </div>
                 </div>
                 <button
@@ -125,3 +145,4 @@ export function Navbar() {
     </nav>
   );
 }
+

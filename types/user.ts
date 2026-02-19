@@ -1,4 +1,5 @@
 export type UserRole = 'medico' | 'coordenador' | 'admin';
+export type UserApprovalStatus = 'pendente_aprovacao' | 'aprovado' | 'rejeitado';
 
 export interface NotificationPreferences {
   novosPlantoes: boolean;
@@ -23,6 +24,7 @@ export interface User {
   crm?: string;
   especialidade?: string;
   role: UserRole;
+  status?: UserApprovalStatus;
   avatar?: string;
   ativo: boolean;
   preferenciasNotificacao: NotificationPreferences;

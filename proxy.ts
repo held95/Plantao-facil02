@@ -26,7 +26,13 @@ const COORDINATOR_ONLY_ROUTES = [
 ];
 
 // Routes that are public (no authentication required)
-const PUBLIC_ROUTES = ['/login'];
+const PUBLIC_ROUTES = ['/login', '/signup', '/forgot-password', '/reset-password'];
+
+function isProtectedCoordinatorRoute(pathname: string): boolean {
+  return COORDINATOR_ONLY_ROUTES.some((route) => {
+    return pathname === route || pathname.startsWith(`${route}/`);
+  });
+}
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -52,7 +58,7 @@ export default async function proxy(request: NextRequest) {
   }
 
   // Check role-based access for coordinator-only routes
-  if (COORDINATOR_ONLY_ROUTES.includes(pathname)) {
+  if (isProtectedCoordinatorRoute(pathname)) {
     const userRole = session.user.role;
 
     if (userRole !== 'coordenador' && userRole !== 'admin') {

@@ -1,19 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockUsers } from '@/lib/data/mockUsers';
-import { User } from '@/types/user';
+import bcrypt from 'bcryptjs';
+import { authUserRepository } from '@/lib/aws/dynamo/authRepository';
+import { awsSesService } from '@/lib/email/awsSesService';
 
-// POST /api/auth/register — Criar nova conta de usuario
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { nome, email, senha, telefone, emailNotificacao, crm, especialidade } = body;
+    const email = (body?.email || '').trim().toLowerCase();
+    const senha = body?.senha || '';
 
-    // Validacao dos campos obrigatorios
-    if (!nome || !email || !senha) {
+    if (!email || !senha) {
       return NextResponse.json(
-        { error: 'Nome, email e senha sao obrigatorios.' },
+        { error: 'Email e senha sao obrigatorios.' },
         { status: 400 }
       );
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return NextResponse.json({ error: 'Email invalido.' }, { status: 400 });
     }
 
     if (senha.length < 6) {
@@ -23,58 +28,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar duplicidade de email
-    const emailExists = mockUsers.some(
-      (u) => u.email.toLowerCase() === email.toLowerCase()
-    );
-    if (emailExists) {
+    const existingUser = await authUserRepository.findByEmail(email);
+    if (existingUser) {
       return NextResponse.json(
         { error: 'Este email ja esta cadastrado.' },
         { status: 409 }
       );
     }
 
-    // Criar novo usuario
-    // Em producao: salvar no DynamoDB e aplicar bcrypt na senha
-    const newUser: User = {
-      id: `user-${Date.now()}-${Math.random().toString(36).substring(7)}`,
-      nome,
-      email: email.toLowerCase(),
-      emailNotificacao: emailNotificacao || undefined,
-      telefone: telefone || undefined,
-      crm: crm || undefined,
-      especialidade: especialidade || undefined,
-      role: 'medico', // Novos usuarios sao medicos por padrao
-      ativo: true,
-      preferenciasNotificacao: {
-        novosPlantoes: true,
-        meusPlantoes: true,
-        lembrete24h: true,
-        lembrete1h: true,
-        alteracoes: true,
-        email: true,
-        app: true,
-        frequenciaEmail: 'imediato',
-        locaisInteresse: [],
-      },
-      createdAt: new Date().toISOString(),
-    };
+    const passwordHash = await bcrypt.hash(senha, 10);
+    await authUserRepository.createPendingUser({
+      email,
+      passwordHash,
+    });
 
-    // Adicionar ao array em memoria (MVP)
-    mockUsers.push(newUser);
-
-    console.log(`Novo usuario criado: ${nome} (${email})`);
+    const emailResult = await awsSesService.sendCadastroRecebidoEmail(email);
+    if (!emailResult.success) {
+      console.warn('[register] Could not send cadastro recebido email:', emailResult.error);
+    }
 
     return NextResponse.json(
       {
         success: true,
-        message: 'Conta criada com sucesso!',
-        user: {
-          id: newUser.id,
-          nome: newUser.nome,
-          email: newUser.email,
-          role: newUser.role,
-        },
+        message: 'Cadastro recebido e pendente de aprovacao.',
       },
       { status: 201 }
     );
@@ -86,3 +62,4 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+

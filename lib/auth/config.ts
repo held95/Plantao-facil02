@@ -1,6 +1,7 @@
 import type { NextAuthConfig } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { mockUsers } from '@/lib/data/mockUsers';
+import bcrypt from 'bcryptjs';
+import { authUserRepository } from '@/lib/aws/dynamo/authRepository';
 
 export const authConfig: NextAuthConfig = {
   providers: [
@@ -15,27 +16,38 @@ export const authConfig: NextAuthConfig = {
           return null;
         }
 
-        const user = mockUsers.find(u => u.email === credentials.email);
-
-        // Em produção, usar bcrypt.compare(credentials.password, user.passwordHash)
-        // Por ora, validação simples para MVP
-        if (user && credentials.password === 'senha123') {
-          return {
-            id: user.id,
-            name: user.nome,
-            email: user.email,
-            role: user.role,
-            avatar: user.avatar,
-          };
+        const user = await authUserRepository.findByEmail(credentials.email as string);
+        if (!user) {
+          return null;
         }
 
-        return null;
+        if (user.status === 'pendente_aprovacao') {
+          throw new Error('PENDING_APPROVAL');
+        }
+
+        if (user.status === 'rejeitado') {
+          throw new Error('ACCOUNT_REJECTED');
+        }
+
+        const isValidPassword = await bcrypt.compare(
+          credentials.password as string,
+          user.passwordHash
+        );
+        if (!isValidPassword) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          name: user.nome,
+          email: user.email,
+          role: user.role,
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      // Adicionar role ao token JWT
       if (user) {
         token.role = user.role;
         token.id = user.id;
@@ -43,7 +55,6 @@ export const authConfig: NextAuthConfig = {
       return token;
     },
     async session({ session, token }) {
-      // Expor role na sessão do cliente
       if (session.user) {
         session.user.role = token.role as string;
         session.user.id = token.id as string;
@@ -56,6 +67,7 @@ export const authConfig: NextAuthConfig = {
   },
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 dias
+    maxAge: 30 * 24 * 60 * 60,
   },
 };
+

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
@@ -10,11 +11,31 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
+function getLoginErrorMessage(errorCode?: string | null): string {
+  if (!errorCode) return 'Email ou senha incorretos.';
+
+  const code = errorCode.toUpperCase();
+  if (code.includes('PENDING_APPROVAL')) {
+    return 'Conta pendente de aprovacao. Aguarde a validacao da equipe.';
+  }
+  if (code.includes('ACCOUNT_REJECTED')) {
+    return 'Sua conta foi rejeitada. Entre em contato com o suporte.';
+  }
+
+  return 'Email ou senha incorretos.';
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [callbackUrl, setCallbackUrl] = useState('/');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setCallbackUrl(params.get('callbackUrl') || '/');
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,13 +49,15 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        toast.error('Email ou senha incorretos');
-      } else {
-        toast.success('Login realizado com sucesso!');
-        router.push('/');
-        router.refresh();
+        toast.error(getLoginErrorMessage(result.error));
+        return;
       }
+
+      toast.success('Login realizado com sucesso.');
+      router.push(callbackUrl);
+      router.refresh();
     } catch (error) {
+      console.error('Erro ao fazer login:', error);
       toast.error('Erro ao fazer login. Tente novamente.');
     } finally {
       setIsLoading(false);
@@ -48,18 +71,17 @@ export default function LoginPage() {
           <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-white shadow-lg ring-4 ring-slate-100 overflow-hidden">
             <img
               src="/logos/logo-main.png"
-              alt="ProTime Logo"
+              alt="Plantao Facil"
               className="w-full h-full object-cover"
             />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Plantão Fácil</h1>
-            <p className="text-base text-gray-600">Faça login para continuar</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Plantao Facil</h1>
+            <p className="text-base text-gray-600">Faca login para continuar</p>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Email/Password Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-semibold text-gray-700">
@@ -83,7 +105,7 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="********"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="h-12 border-2 border-gray-200 focus:border-slate-600 transition-colors"
@@ -101,7 +123,6 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Footer Links */}
           <div className="flex items-center justify-between text-sm pt-2">
             <Link
               href="/forgot-password"
@@ -117,10 +138,9 @@ export default function LoginPage() {
             </Link>
           </div>
 
-          {/* Security Note */}
           <div className="pt-4 border-t border-gray-200">
             <p className="text-center text-xs text-gray-500">
-              🔒 Seus dados estão protegidos e seguros
+              Seus dados estao protegidos e seguros.
             </p>
           </div>
         </CardContent>
