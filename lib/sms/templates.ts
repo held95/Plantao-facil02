@@ -10,7 +10,8 @@ import type { SMSTemplate } from '@/types/sms';
  * Multi-part SMS: charged per 153 character segment
  */
 
-const APP_URL = process.env.NEXTAUTH_URL || 'https://plantaofacil.com';
+const APP_URL = process.env.NEXTAUTH_URL || 'https://plantao-facil02-qdja.vercel.app';
+const LOGIN_URL = `${APP_URL}/login`;
 
 /**
  * Creates SMS template with metadata
@@ -34,7 +35,7 @@ export function getPlantaoCriadoMessage(plantao: Plantao): SMSTemplate {
   const data = formatDate(plantao.data); // dd/MM
   const valor = plantao.valor ? ` | R$${plantao.valor}` : '';
 
-  const message = `Novo plantao! ${plantao.especialidade} - ${plantao.hospital} | Dia: ${data} | ${plantao.horarioInicio}-->${plantao.horarioFim}${valor}`;
+  const message = `Plantao: ${plantao.especialidade} - ${plantao.hospital} | ${data} ${plantao.horarioInicio}-${plantao.horarioFim}${valor} | ${LOGIN_URL}`;
 
   return createTemplate(message);
 }
@@ -53,7 +54,7 @@ export function getInscricaoConfirmadaMessage(
   const data = formatDate(plantao.data);
   const horario = plantao.horarioInicio;
 
-  const message = `🎉 Inscrição confirmada! ${plantao.hospital} em ${data} às ${horario}. Boa sorte, Dr(a). ${medicoNome}!`;
+  const message = `🎉 Confirmado! ${plantao.hospital} em ${data} as ${horario}. Dr(a). ${medicoNome}. ${LOGIN_URL}`;
 
   return createTemplate(message);
 }
@@ -71,7 +72,7 @@ export function getLembrete24hMessage(
 ): SMSTemplate {
   const horario = plantao.horarioInicio;
 
-  const message = `🔔 Lembrete: Plantão amanhã às ${horario} no ${plantao.hospital}. Prepare-se!`;
+  const message = `🔔 Plantao amanha as ${horario} no ${plantao.hospital}. ${LOGIN_URL}`;
 
   return createTemplate(message);
 }
@@ -90,7 +91,7 @@ export function getLembrete1hMessage(
   const horario = plantao.horarioInicio;
   const local = `${plantao.cidade}/${plantao.estado}`;
 
-  const message = `⏰ Seu plantão começa em 1 hora! ${plantao.hospital} - ${local}. Até lá!`;
+  const message = `⏰ Plantao em 1h! ${plantao.hospital} - ${local}. ${LOGIN_URL}`;
 
   return createTemplate(message);
 }
@@ -110,13 +111,7 @@ export function getPlantaoCanceladoMessage(
 ): SMSTemplate {
   const data = formatDate(plantao.data);
 
-  let message = `❌ Plantão cancelado: ${plantao.hospital} em ${data}.`;
-
-  if (motivo) {
-    message += ` Motivo: ${motivo}.`;
-  }
-
-  message += ` Desculpe o transtorno.`;
+  let message = `❌ Plantao cancelado: ${plantao.hospital} em ${data}.${motivo ? ` ${motivo}.` : ''} ${LOGIN_URL}`;
 
   return createTemplate(message);
 }
@@ -136,7 +131,7 @@ export function getPlantaoAtualizadoMessage(
 ): SMSTemplate {
   const data = formatDate(plantao.data);
 
-  const message = `📝 Plantão atualizado: ${plantao.hospital} (${data}). ${mudancas}. Verifique: ${APP_URL}`;
+  const message = `📝 Plantao atualizado: ${plantao.hospital} (${data}). ${mudancas}. ${LOGIN_URL}`;
 
   return createTemplate(message);
 }
