@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "Plantão Fácil",
+    "slug": "plantao-facil",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "plantaofacil",
+    "plugins": [
+      ["expo-router", { "root": "app" }],
+      "expo-notifications"
+    ],
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#2563eb"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.plantaofacil.app"
+    }
+  }
+}

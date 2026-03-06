@@ -1,0 +1,17 @@
+{
+  "name": "@plantao/notifications",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.987.0",
+    "@aws-sdk/client-sns": "^3.987.0",
+    "@react-email/components": "^1.0.7",
+    "expo-server-sdk": "^3.7.0",
+    "react": "^19.2.4",
+    "react-email": "^5.2.8",
+    "@plantao/shared": "workspace:*"
+  }
+}
