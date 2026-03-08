@@ -9,6 +9,7 @@
     "@aws-sdk/client-ses": "^3.987.0",
     "@aws-sdk/client-sns": "^3.987.0",
     "@react-email/components": "^1.0.7",
+    "@react-email/render": "^1.0.6",
     "expo-server-sdk": "^3.7.0",
     "react": "^19.2.4",
     "react-email": "^5.2.8",

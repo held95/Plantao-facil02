@@ -3,7 +3,26 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "dist/**"]
+      "outputs": [".next/**", "dist/**"],
+      "env": [
+        "NEXTAUTH_URL",
+        "NEXTAUTH_SECRET",
+        "AUTH_SOURCE",
+        "AWS_REGION",
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_DYNAMODB_USERS_TABLE",
+        "AWS_DYNAMODB_RESET_TABLE",
+        "AWS_DYNAMODB_USERS_EMAIL_GSI",
+        "ENABLE_EMAIL_NOTIFICATIONS",
+        "AWS_SES_FROM_EMAIL",
+        "AWS_SES_REPLY_TO",
+        "ENABLE_SMS_NOTIFICATIONS",
+        "APP_BASE_URL",
+        "NEXT_PUBLIC_API_BASE_URL",
+        "NEXT_PUBLIC_APP_NAME",
+        "PASSWORD_RESET_TOKEN_TTL_MINUTES"
+      ]
     },
     "dev": {
       "cache": false,
