@@ -8,6 +8,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const email = (body?.email || '').trim().toLowerCase();
     const senha = body?.senha || '';
+    const telefone = (body?.telefone || '').trim() || undefined;
 
     if (!email || !senha) {
       return NextResponse.json(
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
     await authUserRepository.createPendingUser({
       email,
       passwordHash,
+      telefone,
     });
 
     const emailResult = await awsSesService.sendCadastroRecebidoEmail(email);

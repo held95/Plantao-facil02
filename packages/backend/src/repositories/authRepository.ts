@@ -208,9 +208,11 @@ export const authUserRepository = {
   async createPendingUser({
     email,
     passwordHash,
+    telefone,
   }: {
     email: string;
     passwordHash: string;
+    telefone?: string;
   }): Promise<AuthUserRecord> {
     const now = new Date().toISOString();
     const emailLower = normalizeEmail(email);
@@ -226,6 +228,7 @@ export const authUserRepository = {
       createdAt: now,
       updatedAt: now,
       pushTokens: [],
+      ...(telefone ? { telefone } : {}),
     };
 
     if (isUsingDynamo()) {

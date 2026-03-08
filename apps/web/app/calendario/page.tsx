@@ -65,10 +65,11 @@ export default function CalendarioPage() {
     setModalOpen(true);
   };
 
-  // Filter plantões for selected date
+  // Filter plantões for selected date (parse as local time to avoid UTC shift)
   const selectedPlantoes = selectedDate
     ? filteredPlantoes.filter((p) => {
-        const plantaoDate = new Date(p.data);
+        const [year, month, day] = p.data.split('-').map(Number);
+        const plantaoDate = new Date(year, month - 1, day);
         return plantaoDate.toDateString() === selectedDate.toDateString();
       })
     : [];

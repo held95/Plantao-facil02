@@ -16,6 +16,7 @@ export default function SignupPage() {
     email: '',
     senha: '',
     confirmarSenha: '',
+    telefone: '',
   });
 
   const set = (field: keyof typeof form, value: string) =>
@@ -41,6 +42,7 @@ export default function SignupPage() {
         body: JSON.stringify({
           email: form.email,
           senha: form.senha,
+          telefone: form.telefone || undefined,
         }),
       });
 
@@ -102,6 +104,19 @@ export default function SignupPage() {
                   onChange={(e) => set('email', e.target.value)}
                   className="h-11 border-2 border-gray-200 focus:border-slate-600 transition-colors"
                   required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Telefone (para receber SMS)
+                </label>
+                <Input
+                  type="tel"
+                  placeholder="(11) 99999-9999"
+                  value={form.telefone}
+                  onChange={(e) => set('telefone', e.target.value)}
+                  className="h-11 border-2 border-gray-200 focus:border-slate-600 transition-colors"
                 />
               </div>
 

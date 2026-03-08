@@ -23,9 +23,15 @@ export function CalendarGrid({
   const monthDays = getMonthDays(currentMonth);
   const weekDays = getWeekDays();
 
+  // Parse date string as local time to avoid UTC timezone shift
+  function parseDateLocal(dateStr: string): Date {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+
   // Group plantões by date for efficient lookup
   const plantoesByDate = plantoes.reduce((acc, plantao) => {
-    const dateKey = new Date(plantao.data).toDateString();
+    const dateKey = parseDateLocal(plantao.data).toDateString();
     if (!acc[dateKey]) {
       acc[dateKey] = [];
     }
