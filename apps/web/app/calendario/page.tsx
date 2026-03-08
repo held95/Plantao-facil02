@@ -12,12 +12,18 @@ import {
   getMonthNameCapitalized,
   getPreviousMonth,
   getNextMonth,
-  getTodayMidnight,
 } from '@plantao/shared';
 import { filterPlantoesByLocal, filterPlantoesByStatus } from '@plantao/shared';
 import { getStatusDisplay } from '@plantao/shared';
 import { mockPlantoes } from '@/lib/data/mockPlantoes';
-import { usePlantaoStore } from '@/stores/plantaoStore';
+import { usePlantoes } from '@/hooks/usePlantoes';
+
+// Parse date string as local time — handles 'YYYY-MM-DD' and ISO formats
+function parseDateLocal(dateStr: string): Date {
+  const plain = dateStr.split('T')[0];
+  const [year, month, day] = plain.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
 
 export default function CalendarioPage() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -26,12 +32,17 @@ export default function CalendarioPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
 
-  // Combinar mock + plantoes criados (Zustand store)
-  const { plantoes: storedPlantoes } = usePlantaoStore();
+  // Fetch plantões from API (real DB)
+  const { data: apiData } = usePlantoes();
+  const apiPlantoes = apiData ?? [];
+
+  // Combine mock + API plantões (API takes precedence over mock with same id)
+  const apiIds = new Set(apiPlantoes.map((p) => p.id));
   const todosPlantoes = [
-    ...mockPlantoes,
-    ...storedPlantoes.filter(sp => !mockPlantoes.some(mp => mp.id === sp.id)),
+    ...mockPlantoes.filter((mp) => !apiIds.has(mp.id)),
+    ...apiPlantoes,
   ];
+
   // Add statusDisplay to plantões
   const plantoesWithStatus = todosPlantoes.map((plantao) => ({
     ...plantao,
@@ -65,11 +76,10 @@ export default function CalendarioPage() {
     setModalOpen(true);
   };
 
-  // Filter plantões for selected date (parse as local time to avoid UTC shift)
+  // Filter plantões for selected date
   const selectedPlantoes = selectedDate
     ? filteredPlantoes.filter((p) => {
-        const [year, month, day] = p.data.split('-').map(Number);
-        const plantaoDate = new Date(year, month - 1, day);
+        const plantaoDate = parseDateLocal(p.data);
         return plantaoDate.toDateString() === selectedDate.toDateString();
       })
     : [];

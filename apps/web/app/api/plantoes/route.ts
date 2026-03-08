@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth, authUserRepository } from '@plantao/backend';
+import { auth, authUserRepository, plantaoRepository } from '@plantao/backend';
 import type { Plantao } from '@plantao/shared';
 import {
   validatePlantaoForm,
@@ -33,7 +33,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
     }
 
-    return NextResponse.json({ plantoes: [] });
+    const plantoes = await plantaoRepository.listPlantoes();
+    return NextResponse.json({ plantoes });
   } catch (error) {
     console.error('Error fetching plantões:', error);
     return NextResponse.json(
@@ -77,7 +78,8 @@ export async function POST(request: NextRequest) {
       ...plantaoData,
     };
 
-    // In production: Save to database
+    // Persist to database
+    await plantaoRepository.createPlantao(newPlantao);
 
     // Dispatch notifications via orchestrator (SMS + email + push)
     try {

@@ -4,6 +4,7 @@ export { authConfig } from './auth/config';
 
 // Repositories
 export { authUserRepository } from './repositories/authRepository';
+export { plantaoRepository } from './repositories/plantaoRepository';
 
 // AWS
 export { getDynamoDocumentClient } from './aws/dynamo/client';

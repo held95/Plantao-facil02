@@ -24,8 +24,10 @@ export function CalendarGrid({
   const weekDays = getWeekDays();
 
   // Parse date string as local time to avoid UTC timezone shift
+  // Handles both 'YYYY-MM-DD' and 'YYYY-MM-DDTHH:MM:SSZ' formats
   function parseDateLocal(dateStr: string): Date {
-    const [year, month, day] = dateStr.split('-').map(Number);
+    const plain = dateStr.split('T')[0];
+    const [year, month, day] = plain.split('-').map(Number);
     return new Date(year, month - 1, day);
   }
 
