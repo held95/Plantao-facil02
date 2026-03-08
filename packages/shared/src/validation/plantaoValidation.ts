@@ -41,7 +41,11 @@ export function validatePlantaoForm(data: PlantaoFormData): ValidationError[] {
   if (!data.data) {
     errors.push({ field: 'data', message: 'Data e obrigatoria' });
   } else {
-    const selectedDate = new Date(data.data);
+    // Parse as local time to avoid UTC timezone shift (new Date('YYYY-MM-DD') = UTC midnight)
+    const parts = data.data.split('T')[0].split('-').map(Number);
+    const selectedDate = parts.length === 3
+      ? new Date(parts[0], parts[1] - 1, parts[2])
+      : new Date(data.data);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (isNaN(selectedDate.getTime())) {
