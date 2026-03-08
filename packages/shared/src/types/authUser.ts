@@ -1,9 +1,4 @@
-import type { UserRole } from './user';
-
-export type UserApprovalStatus =
-  | 'pendente_aprovacao'
-  | 'aprovado'
-  | 'rejeitado';
+import type { UserRole, UserApprovalStatus } from './user';
 
 export interface AuthUserRecord {
   id: string;

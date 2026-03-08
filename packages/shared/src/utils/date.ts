@@ -87,7 +87,7 @@ export function formatDateFull(isoString: string): string {
   }
 }
 
-export function isToday(isoString: string): boolean {
+export function isTodayIso(isoString: string): boolean {
   try {
     const date = parseISO(isoString);
     if (!isValid(date)) return false;
