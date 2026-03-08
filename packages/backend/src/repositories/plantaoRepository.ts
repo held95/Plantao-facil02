@@ -8,27 +8,21 @@ const plantoesTable = process.env.AWS_DYNAMODB_PLANTOES_TABLE;
 const authSource: AuthSource =
   process.env.AUTH_SOURCE === 'dynamodb' ? 'dynamodb' : 'mock';
 
+// Use DynamoDB only if AUTH_SOURCE=dynamodb AND the table is configured
 function isUsingDynamo(): boolean {
-  return authSource === 'dynamodb';
-}
-
-function ensureDynamoConfig() {
-  if (!plantoesTable) {
-    throw new Error('AWS_DYNAMODB_PLANTOES_TABLE env var not set');
-  }
+  return authSource === 'dynamodb' && !!plantoesTable;
 }
 
 function buildPlantaoPk(id: string) {
   return `PLANTAO#${id}`;
 }
 
-// In-memory store for mock mode
+// In-memory store (used in mock mode or when DynamoDB table not yet configured)
 const mockPlantoes = new Map<string, Plantao>();
 
 export const plantaoRepository = {
   async createPlantao(plantao: Plantao): Promise<Plantao> {
     if (isUsingDynamo()) {
-      ensureDynamoConfig();
       const client = getDynamoDocumentClient();
       await client.send(
         new PutCommand({
@@ -43,13 +37,16 @@ export const plantaoRepository = {
       return plantao;
     }
 
+    if (authSource === 'dynamodb' && !plantoesTable) {
+      console.warn('[plantaoRepository] AWS_DYNAMODB_PLANTOES_TABLE not set — using in-memory fallback');
+    }
+
     mockPlantoes.set(plantao.id, plantao);
     return plantao;
   },
 
   async listPlantoes(): Promise<Plantao[]> {
     if (isUsingDynamo()) {
-      ensureDynamoConfig();
       const client = getDynamoDocumentClient();
       const result = await client.send(
         new ScanCommand({
