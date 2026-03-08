@@ -13,6 +13,7 @@ export interface PlantaoFormData {
   valor: string;
   vagasTotal: string;
   status: 'disponivel' | 'preenchido' | 'cancelado';
+  notificationChannels?: 'sms' | 'email' | 'ambos';
 }
 
 export interface ValidationError {

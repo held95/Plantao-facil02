@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@plantao/backend';
+import { auth, authUserRepository } from '@plantao/backend';
 import type { Plantao } from '@plantao/shared';
 import {
   validatePlantaoForm,
@@ -7,21 +7,21 @@ import {
 } from '@plantao/shared';
 import { dispatchPlantaoCreated } from '@plantao/notifications';
 import type { NotificationRecipient } from '@plantao/notifications';
-import { mockUsers } from '@/lib/data/mockUsers';
 
-function buildRecipients(): NotificationRecipient[] {
-  return mockUsers
-    .filter((u) => u.ativo)
-    .map((u) => ({
-      userId: u.id,
-      nome: u.nome,
-      email: u.email,
-      phone: u.telefone,
-      pushTokens: [],
-      smsEnabled: u.preferenciasNotificacao?.novosPlantoes ?? true,
-      emailEnabled: u.preferenciasNotificacao?.novosPlantoes ?? true,
-      pushEnabled: false,
-    }));
+type NotificationChannels = 'sms' | 'email' | 'ambos';
+
+async function buildRecipients(channel: NotificationChannels): Promise<NotificationRecipient[]> {
+  const users = await authUserRepository.listAllActiveUsers();
+  return users.map((u) => ({
+    userId: u.id,
+    nome: u.nome,
+    email: u.email,
+    phone: u.telefone,
+    pushTokens: [],
+    smsEnabled: channel === 'sms' || channel === 'ambos',
+    emailEnabled: channel === 'email' || channel === 'ambos',
+    pushEnabled: false,
+  }));
 }
 
 // GET /api/plantoes - Get all plantões
@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    const channel: NotificationChannels = body.notificationChannels ?? 'ambos';
 
     const errors = validatePlantaoForm(body);
     if (errors.length > 0) {
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     // Dispatch notifications via orchestrator (SMS + email + push)
     try {
-      const recipients = buildRecipients();
+      const recipients = await buildRecipients(channel);
       const logs = await dispatchPlantaoCreated(newPlantao, recipients);
       const failed = logs.filter((l) => l.status === 'failed');
       if (failed.length > 0) {

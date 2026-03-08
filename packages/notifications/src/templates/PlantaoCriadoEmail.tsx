@@ -1,15 +1,14 @@
 import {
   Body,
+  Button,
   Container,
   Head,
   Heading,
+  Hr,
   Html,
   Preview,
   Section,
   Text,
-  Button,
-  Hr,
-  Img,
 } from '@react-email/components';
 import type { Plantao } from '@plantao/shared';
 
@@ -20,95 +19,69 @@ interface PlantaoCriadoEmailProps {
 }
 
 export default function PlantaoCriadoEmail({
-  coordenadorNome = 'Coordenador',
+  coordenadorNome = 'Médico(a)',
   plantao,
-  plantaoUrl = 'https://plantaofacil.com',
+  plantaoUrl = 'https://plantaofacil.com/login',
 }: PlantaoCriadoEmailProps) {
   const dataFormatada = new Date(plantao.data).toLocaleDateString('pt-BR', {
     day: '2-digit',
-    month: 'long',
+    month: '2-digit',
     year: 'numeric',
+  });
+  const valorFormatado = plantao.valor.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
   });
 
   return (
     <Html>
       <Head />
-      <Preview>Plantão criado com sucesso - {plantao.hospital}</Preview>
+      <Preview>📢 Nova vaga de plantão — {plantao.especialidade} em {plantao.hospital}</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Section style={logoSection}>
-            <Img
-              src={`${plantaoUrl.replace(/\/plantoes\/.*$/, '')}/logos/logo-email.png`}
-              alt="Plantão Fácil"
-              height="40"
-              style={logo}
-            />
-          </Section>
+          <Heading style={h1}>📢 Vagas Disponíveis para Plantão Médico</Heading>
 
-          <Heading style={h1}>Plantão Criado com Sucesso!</Heading>
-
-          <Text style={text}>Olá {coordenadorNome},</Text>
-
-          <Text style={text}>
-            Seu plantão foi criado e publicado com sucesso na plataforma Plantão
-            Fácil. Os médicos já podem visualizar e se inscrever.
-          </Text>
+          <Text style={greeting}>Olá, {coordenadorNome}!</Text>
 
           <Section style={detailsBox}>
-            <Heading as="h2" style={h2}>
-              Detalhes do Plantão
-            </Heading>
-
-            <DetailRow label="Hospital" value={plantao.hospital} />
-            <DetailRow label="Especialidade" value={plantao.especialidade} />
-            <DetailRow label="Data" value={dataFormatada} />
-            <DetailRow
+            <EmojiRow emoji="🩺" label="Especialidade" value={plantao.especialidade} />
+            <EmojiRow emoji="🏥" label="Hospital" value={plantao.hospital} />
+            <EmojiRow emoji="📅" label="Data" value={dataFormatada} />
+            <EmojiRow
+              emoji="⏰"
               label="Horário"
-              value={`${plantao.horarioInicio} - ${plantao.horarioFim}`}
+              value={`${plantao.horarioInicio} às ${plantao.horarioFim}`}
             />
-            <DetailRow
-              label="Local"
-              value={`${plantao.cidade}, ${plantao.estado}`}
-            />
-            <DetailRow
-              label="Valor"
-              value={`R$ ${plantao.valor.toLocaleString('pt-BR', {
-                minimumFractionDigits: 2,
-              })}`}
-            />
-            <DetailRow
-              label="Vagas"
-              value={`${plantao.vagasTotal} vagas disponíveis`}
-            />
+            <EmojiRow emoji="💰" label="Remuneração" value={`R$ ${valorFormatado}`} />
           </Section>
 
           <Section style={buttonContainer}>
             <Button style={button} href={plantaoUrl}>
-              Ver Plantão na Plataforma
+              🔗 Garantir Minha Vaga
             </Button>
           </Section>
 
           <Hr style={hr} />
 
-          <Text style={footer}>
-            Você receberá notificações quando médicos se inscreverem neste plantão.
-          </Text>
-
-          <Text style={footer}>
-            Plantão Fácil - Conectando Hospitais e Médicos
-          </Text>
+          <Text style={footer}>Plantão Fácil — Conectando Hospitais e Médicos</Text>
         </Container>
       </Body>
     </Html>
   );
 }
 
-function DetailRow({ label, value }: { label: string; value: string }) {
+function EmojiRow({
+  emoji,
+  label,
+  value,
+}: {
+  emoji: string;
+  label: string;
+  value: string;
+}) {
   return (
-    <div style={{ marginBottom: '12px' }}>
-      <Text style={detailLabel}>{label}:</Text>
-      <Text style={detailValue}>{value}</Text>
-    </div>
+    <Text style={row}>
+      {emoji} <span style={labelStyle}>{label}:</span> {value}
+    </Text>
   );
 }
 
@@ -128,26 +101,19 @@ const container = {
 
 const h1 = {
   color: '#1f2937',
-  fontSize: '28px',
+  fontSize: '24px',
   fontWeight: 'bold',
-  margin: '40px 0 20px',
+  margin: '40px 0 8px',
   padding: '0 40px',
   lineHeight: '1.3',
 };
 
-const h2 = {
-  color: '#374151',
-  fontSize: '20px',
-  fontWeight: '600',
-  margin: '0 0 20px',
-};
-
-const text = {
+const greeting = {
   color: '#4b5563',
   fontSize: '16px',
   lineHeight: '26px',
   padding: '0 40px',
-  margin: '16px 0',
+  margin: '0 0 24px',
 };
 
 const detailsBox = {
@@ -155,28 +121,24 @@ const detailsBox = {
   border: '1px solid #e5e7eb',
   borderRadius: '12px',
   padding: '24px',
-  margin: '24px 40px',
+  margin: '0 40px 24px',
 };
 
-const detailLabel = {
-  color: '#6b7280',
-  fontSize: '13px',
-  margin: '0',
-  fontWeight: '500',
-  textTransform: 'uppercase' as const,
-  letterSpacing: '0.5px',
-};
-
-const detailValue = {
+const row = {
   color: '#1f2937',
   fontSize: '16px',
-  margin: '4px 0 0',
-  fontWeight: '600',
+  lineHeight: '28px',
+  margin: '0',
+};
+
+const labelStyle = {
+  color: '#6b7280',
+  fontWeight: '500' as const,
 };
 
 const buttonContainer = {
   textAlign: 'center' as const,
-  margin: '32px 40px',
+  margin: '0 40px 32px',
 };
 
 const button = {
@@ -193,7 +155,7 @@ const button = {
 
 const hr = {
   borderColor: '#e5e7eb',
-  margin: '32px 40px',
+  margin: '0 40px 24px',
 };
 
 const footer = {
@@ -202,16 +164,5 @@ const footer = {
   lineHeight: '24px',
   padding: '0 40px',
   textAlign: 'center' as const,
-  margin: '8px 0',
-};
-
-const logoSection = {
-  textAlign: 'center' as const,
-  padding: '20px 0',
-  marginBottom: '20px',
-};
-
-const logo = {
-  height: '40px',
-  width: 'auto',
+  margin: '0',
 };

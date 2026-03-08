@@ -95,10 +95,24 @@ Plantao-facil02/
             └── types.ts      ← NotificationEvent, NotificationRecipient, DeliveryLog
 ```
 
+### Web App Pages
+
+- `/` — plantões list (home)
+- `/plantoes/[id]` — shift detail
+- `/criar` — create plantão (coordenador/admin)
+- `/gerenciar` — manage plantões (coordenador/admin)
+- `/inscricoes` — médico's own inscriptions
+- `/calendario` — calendar view
+- `/coordenadores` — coordenador management (admin)
+- `/notificacoes` — notification center
+- `/logs` — audit logs (admin)
+- `/documents` — documents section
+- `/login`, `/signup`, `/forgot-password`, `/reset-password` — auth flows
+
 ### Authentication & Authorization
 
 - **User statuses**: `pendente_aprovacao` → `aprovado` | `rejeitado`
-- **Roles**: `admin`, `coordenador`, `medico`, `viewer`
+- **Roles**: `admin`, `coordenador`, `medico` (defined in `UserRole` type in `@plantao/shared`)
 - New users are blocked from logging in until an admin approves their account
 - Password reset tokens are stored in DynamoDB with TTL (default 60 min)
 - Route protection: `requireAuth`, `requireRole`, `requireCoordinator`, `requireAdmin` from `@plantao/backend`
@@ -139,10 +153,11 @@ AUTH_SOURCE=mock|dynamodb
 AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
 AWS_DYNAMODB_USERS_TABLE, AWS_DYNAMODB_RESET_TABLE, AWS_DYNAMODB_USERS_EMAIL_GSI
 ENABLE_EMAIL_NOTIFICATIONS=true|false
-AWS_SES_FROM_EMAIL
+AWS_SES_FROM_EMAIL, AWS_SES_REPLY_TO
 ENABLE_SMS_NOTIFICATIONS=true|false
 APP_BASE_URL
-NEXT_PUBLIC_API_BASE_URL
+NEXT_PUBLIC_API_BASE_URL, NEXT_PUBLIC_APP_NAME
+PASSWORD_RESET_TOKEN_TTL_MINUTES=60
 ```
 
 Key variables for `apps/mobile`:

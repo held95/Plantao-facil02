@@ -66,6 +66,7 @@ function seedMockAuthUsers() {
       updatedAt: now,
       approvedAt: user.ativo ? now : undefined,
       approvedBy: user.ativo ? 'seed' : undefined,
+      telefone: user.telefone,
       pushTokens: [],
     });
   }
@@ -132,6 +133,7 @@ function mapDynamoUser(item: any): AuthUserRecord {
     updatedAt: item.updatedAt,
     approvedAt: item.approvedAt,
     approvedBy: item.approvedBy,
+    telefone: item.telefone,
     pushTokens: item.pushTokens || [],
   };
 }
@@ -357,6 +359,23 @@ export const authUserRepository = {
     };
     mockAuthUsers.set(userId, updated);
     return updated;
+  },
+
+  async listAllActiveUsers(): Promise<AuthUserRecord[]> {
+    if (isUsingDynamo()) {
+      ensureDynamoConfig();
+      const client = getDynamoDocumentClient();
+      const scan = await client.send(
+        new ScanCommand({
+          TableName: usersTable,
+          FilterExpression: '#status = :aprovado',
+          ExpressionAttributeNames: { '#status': 'status' },
+          ExpressionAttributeValues: { ':aprovado': 'aprovado' },
+        })
+      );
+      return (scan.Items || []).map(mapDynamoUser);
+    }
+    return Array.from(mockAuthUsers.values()).filter((u) => u.status === 'aprovado');
   },
 
   async createPasswordResetToken({

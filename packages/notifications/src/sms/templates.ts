@@ -23,9 +23,19 @@ function createTemplate(body: string): SMSTemplate {
 
 export function getPlantaoCriadoMessage(plantao: Plantao): SMSTemplate {
   const data = formatDate(plantao.data);
-  const valor = plantao.valor ? ` | R$${plantao.valor}` : '';
+  const valor = plantao.valor
+    ? plantao.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+    : '0,00';
 
-  const message = `Plantao: ${plantao.especialidade} - ${plantao.hospital} | ${data} ${plantao.horarioInicio}-${plantao.horarioFim}${valor} | ${LOGIN_URL}`;
+  const message =
+    `📢 Vagas Disponíveis para Plantão Médico\n` +
+    `🩺 Especialidade: ${plantao.especialidade}\n` +
+    `🏥 ${plantao.hospital}\n` +
+    `📅 ${data}\n` +
+    `⏰ ${plantao.horarioInicio} às ${plantao.horarioFim}\n` +
+    `💰 Remuneração: R$ ${valor}\n` +
+    `Garanta sua vaga acessando:\n` +
+    `🔗 ${LOGIN_URL}`;
 
   return createTemplate(message);
 }

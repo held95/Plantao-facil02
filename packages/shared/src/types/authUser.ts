@@ -17,6 +17,7 @@ export interface AuthUserRecord {
   updatedAt: string;
   approvedAt?: string;
   approvedBy?: string;
+  telefone?: string;
   pushTokens?: string[];
 }
 

@@ -80,7 +80,7 @@ export const awsSesService = {
     coordenadorNome: string,
     plantao: Plantao
   ): Promise<SendEmailResult> {
-    const plantaoUrl = `${process.env.NEXTAUTH_URL}/plantoes/${plantao.id}`;
+    const plantaoUrl = `${process.env.APP_BASE_URL || process.env.NEXTAUTH_URL}/login`;
     const emailHtml = await render(
       PlantaoCriadoEmail({
         coordenadorNome,

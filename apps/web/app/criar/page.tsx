@@ -31,6 +31,7 @@ export default function CriarPlantaoPage() {
     especialidade: '',
     valor: '',
     vagasTotal: '',
+    notificationChannels: 'ambos',
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -352,6 +353,24 @@ export default function CriarPlantaoPage() {
                       required
                     />
                   </div>
+                </div>
+
+                {/* Canal de Notificacao */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Enviar notificação via
+                  </label>
+                  <select
+                    name="notificationChannels"
+                    value={formData.notificationChannels ?? 'ambos'}
+                    onChange={handleChange}
+                    title="Canal de notificação"
+                    className="w-full h-10 px-3 py-2 border border-gray-200 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="ambos">SMS e E-mail</option>
+                    <option value="email">Somente E-mail</option>
+                    <option value="sms">Somente SMS</option>
+                  </select>
                 </div>
 
                 {/* Buttons */}
