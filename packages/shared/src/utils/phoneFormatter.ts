@@ -2,10 +2,10 @@
  * Phone Formatter Utility — Brazilian phone numbers (E.164 format for AWS SNS)
  */
 
-export function formatToBrazilianE164(phone: string): string {
+export function formatToBrazilianE164(phone: string | unknown): string {
   if (!phone) return '';
 
-  const digitsOnly = phone.replace(/\D/g, '');
+  const digitsOnly = String(phone).replace(/\D/g, '');
   let formattedPhone = digitsOnly;
 
   if (formattedPhone.startsWith('55')) {
@@ -29,10 +29,10 @@ export function formatToBrazilianE164(phone: string): string {
   return `+55${formattedPhone}`;
 }
 
-export function validateBrazilianPhone(phone: string): boolean {
+export function validateBrazilianPhone(phone: string | unknown): boolean {
   if (!phone) return false;
 
-  const digitsOnly = phone.replace(/\D/g, '');
+  const digitsOnly = String(phone).replace(/\D/g, '');
   let cleanedPhone = digitsOnly;
   if (cleanedPhone.startsWith('55')) {
     cleanedPhone = cleanedPhone.substring(2);
