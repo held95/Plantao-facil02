@@ -3,15 +3,17 @@ import { auth, plantaoRepository } from '@plantao/backend';
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
+
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
   }
 
   const plantoes = await plantaoRepository.listPlantoes();
-  const plantao = plantoes.find((p) => p.id === params.id);
+  const plantao = plantoes.find((p) => p.id === id);
   if (!plantao) {
     return NextResponse.json({ error: 'Plantão não encontrado' }, { status: 404 });
   }
@@ -25,6 +27,6 @@ export async function DELETE(
     );
   }
 
-  await plantaoRepository.deleteById(params.id);
+  await plantaoRepository.deleteById(id);
   return NextResponse.json({ success: true });
 }
