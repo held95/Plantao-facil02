@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
     const newPlantao: Plantao = {
       id: `plantao-${Date.now()}-${Math.random().toString(36).substring(7)}`,
       ...plantaoData,
+      criadoPor: session.user?.id,
     };
 
     // Persist to database

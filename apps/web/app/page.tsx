@@ -3,13 +3,50 @@
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Navbar } from '@/components/layout/Navbar';
+import { Logo } from '@/components/common/Logo';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Calendar, FileText, Clock, TrendingUp, ArrowRight, Plus } from 'lucide-react';
+import { usePlantoes } from '@/hooks/usePlantoes';
+
+function calcHoras(inicio: string, fim: string): number {
+  const [h1, m1] = inicio.split(':').map(Number);
+  const [h2, m2] = fim.split(':').map(Number);
+  return (h2 * 60 + m2 - (h1 * 60 + m1)) / 60;
+}
 
 export default function HomePage() {
   const { data: session } = useSession();
   const userName = session?.user?.name || 'Usuário';
+  const { data: apiData } = usePlantoes();
+  const plantoes = apiData ?? [];
+
+  const disponivel = plantoes.filter(
+    (p) => p.status === 'disponivel' && p.vagasDisponiveis > 0
+  );
+
+  const qtdDisponiveis = disponivel.length;
+
+  const totalInscricoes = plantoes.reduce(
+    (acc, p) => acc + (p.vagasTotal - p.vagasDisponiveis),
+    0
+  );
+
+  const totalHoras = Math.round(
+    disponivel.reduce(
+      (acc, p) => acc + calcHoras(p.horarioInicio, p.horarioFim),
+      0
+    )
+  );
+
+  const mediaValor =
+    disponivel.length > 0
+      ? disponivel.reduce((acc, p) => acc + p.valor, 0) / disponivel.length
+      : 0;
+  const mediaValorFormatada = `R$ ${mediaValor.toLocaleString('pt-BR', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  })}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/20 to-gray-50">
@@ -17,13 +54,16 @@ export default function HomePage() {
 
       <div className="container mx-auto px-6 py-8">
         {/* Welcome Section */}
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-900 mb-3">
-            👋 Bem-vindo, {userName}
-          </h1>
-          <p className="text-lg text-gray-600">
-            Aqui está um resumo das suas atividades e oportunidades
-          </p>
+        <div className="mb-10 flex items-center gap-6">
+          <Logo variant="main" size={64} linkToHome={false} />
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-3">
+              👋 Bem-vindo, {userName}
+            </h1>
+            <p className="text-lg text-gray-600">
+              Aqui está um resumo das suas atividades e oportunidades
+            </p>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -36,7 +76,7 @@ export default function HomePage() {
                   <Calendar className="h-5 w-5 text-white" />
                 </div>
               </div>
-              <div className="text-4xl font-bold text-white mb-1">8</div>
+              <div className="text-4xl font-bold text-white mb-1">{qtdDisponiveis}</div>
               <p className="text-sm text-blue-100">Plantões abertos para inscrição</p>
             </CardContent>
           </Card>
@@ -44,39 +84,39 @@ export default function HomePage() {
           <Card className="bg-gradient-to-br from-green-500 to-green-600 border-0 shadow-lg hover:shadow-xl transition-all group">
             <CardContent className="pt-6 pb-6">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-sm font-semibold text-green-100">Minhas Inscrições</div>
+                <div className="text-sm font-semibold text-green-100">Vagas Preenchidas</div>
                 <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <FileText className="h-5 w-5 text-white" />
                 </div>
               </div>
-              <div className="text-4xl font-bold text-white mb-1">3</div>
-              <p className="text-sm text-green-100">Inscrições ativas</p>
+              <div className="text-4xl font-bold text-white mb-1">{totalInscricoes}</div>
+              <p className="text-sm text-green-100">Total de inscrições realizadas</p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-purple-500 to-purple-600 border-0 shadow-lg hover:shadow-xl transition-all group">
             <CardContent className="pt-6 pb-6">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-sm font-semibold text-purple-100">Horas Trabalhadas</div>
+                <div className="text-sm font-semibold text-purple-100">Horas Disponíveis</div>
                 <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Clock className="h-5 w-5 text-white" />
                 </div>
               </div>
-              <div className="text-4xl font-bold text-white mb-1">72</div>
-              <p className="text-sm text-purple-100">Total este mês</p>
+              <div className="text-4xl font-bold text-white mb-1">{totalHoras}h</div>
+              <p className="text-sm text-purple-100">Total de horas em plantões abertos</p>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-br from-amber-500 to-amber-600 border-0 shadow-lg hover:shadow-xl transition-all group">
             <CardContent className="pt-6 pb-6">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-sm font-semibold text-amber-100">Este Mês</div>
+                <div className="text-sm font-semibold text-amber-100">Média por Plantão</div>
                 <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <TrendingUp className="h-5 w-5 text-white" />
                 </div>
               </div>
-              <div className="text-4xl font-bold text-white mb-1">R$ 9.600</div>
-              <p className="text-sm text-amber-100">Valor total estimado</p>
+              <div className="text-4xl font-bold text-white mb-1">{mediaValorFormatada}</div>
+              <p className="text-sm text-amber-100">Remuneração média dos plantões</p>
             </CardContent>
           </Card>
         </div>
@@ -155,7 +195,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900">Acesso Rápido</h3>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               <Link href="/inscricoes">
                 <Button variant="outline" className="w-full h-auto py-4 flex-col gap-2 border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-all group">
                   <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -178,14 +218,6 @@ export default function HomePage() {
                     <Clock className="h-5 w-5 text-amber-600" />
                   </div>
                   <span className="text-sm font-medium">Notificações</span>
-                </Button>
-              </Link>
-              <Link href="/logs">
-                <Button variant="outline" className="w-full h-auto py-4 flex-col gap-2 border-gray-200 hover:bg-green-50 hover:border-green-300 transition-all group">
-                  <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <TrendingUp className="h-5 w-5 text-green-600" />
-                  </div>
-                  <span className="text-sm font-medium">Logs</span>
                 </Button>
               </Link>
             </div>

@@ -1,4 +1,4 @@
-import { PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { PutCommand, ScanCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 import { getDynamoDocumentClient } from '../aws/dynamo/client';
 import type { Plantao } from '@plantao/shared';
 
@@ -59,5 +59,19 @@ export const plantaoRepository = {
     }
 
     return Array.from(mockPlantoes.values());
+  },
+
+  async deleteById(id: string): Promise<void> {
+    if (isUsingDynamo()) {
+      const client = getDynamoDocumentClient();
+      await client.send(
+        new DeleteCommand({
+          TableName: plantoesTable,
+          Key: { pk: buildPlantaoPk(id) },
+        })
+      );
+      return;
+    }
+    mockPlantoes.delete(id);
   },
 };

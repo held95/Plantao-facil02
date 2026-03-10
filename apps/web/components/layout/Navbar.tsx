@@ -9,11 +9,8 @@ import {
   Plus,
   FileText,
   Bell,
-  Users,
   LogOut,
   ClipboardList,
-  Activity,
-  UserCheck,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { NotificationDropdown } from '@/components/layout/NotificationDropdown';
@@ -36,15 +33,10 @@ export function Navbar() {
     { href: '/inscricoes', label: 'Minhas Inscricoes', icon: FileText },
     { href: '/notificacoes', label: 'Notificacoes', icon: Bell },
     { href: '/gerenciar', label: 'Gerenciar Inscricoes', icon: ClipboardList },
-    { href: '/gerenciar/aprovacoes', label: 'Aprovar Contas', icon: UserCheck },
-    { href: '/logs', label: 'Logs', icon: Activity },
-    { href: '/coordenadores', label: 'Coordenadores', icon: Users },
   ];
 
   const coordinatorOnlyPages = [
     '/criar',
-    '/logs',
-    '/coordenadores',
     '/gerenciar',
     '/gerenciar/aprovacoes',
   ];

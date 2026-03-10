@@ -15,6 +15,7 @@ export interface Plantao {
   vagasTotal: number;
   cidade: string;
   estado: string;
+  criadoPor?: string; // userId de quem criou o plantão
 }
 
 export interface InscricaoPlantao {

@@ -2,11 +2,12 @@
 
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Plantao } from '@plantao/shared';
-import { Calendar, Clock, MapPin, DollarSign, Users, FileText, Loader2 } from 'lucide-react';
+import { Calendar, Clock, MapPin, DollarSign, Users, FileText, Loader2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toast } from 'sonner';
@@ -27,7 +28,11 @@ export function PlantaoDetailModal({
 }: PlantaoDetailModalProps) {
   const { data: session } = useSession();
   const isMedico = session?.user?.role === 'medico';
+  const userId = session?.user?.id;
+  const userRole = session?.user?.role;
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const handleInscricao = async (plantaoId: string) => {
     setLoadingId(plantaoId);
@@ -44,6 +49,23 @@ export function PlantaoDetailModal({
       toast.error(message);
     } finally {
       setLoadingId(null);
+    }
+  };
+
+  const handleDelete = async (plantaoId: string) => {
+    setDeletingId(plantaoId);
+    try {
+      await axios.delete(`/api/plantoes/${plantaoId}`);
+      toast.success('Plantão excluído com sucesso.');
+      queryClient.invalidateQueries({ queryKey: ['plantoes'] });
+      onOpenChange(false);
+    } catch (error: any) {
+      const message =
+        error.response?.data?.error ||
+        'Erro ao excluir plantão. Tente novamente.';
+      toast.error(message);
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -79,6 +101,9 @@ export function PlantaoDetailModal({
                 isMedico={isMedico}
                 onInscricao={handleInscricao}
                 isLoading={loadingId === plantao.id}
+                canDelete={plantao.criadoPor === userId || userRole === 'admin'}
+                onDelete={handleDelete}
+                isDeleting={deletingId === plantao.id}
               />
             ))
           )}
@@ -93,9 +118,20 @@ interface PlantaoCardProps {
   isMedico: boolean;
   onInscricao: (plantaoId: string) => void;
   isLoading: boolean;
+  canDelete: boolean;
+  onDelete: (plantaoId: string) => void;
+  isDeleting: boolean;
 }
 
-function PlantaoCard({ plantao, isMedico, onInscricao, isLoading }: PlantaoCardProps) {
+function PlantaoCard({
+  plantao,
+  isMedico,
+  onInscricao,
+  isLoading,
+  canDelete,
+  onDelete,
+  isDeleting,
+}: PlantaoCardProps) {
   const isDisponivel =
     plantao.status === 'disponivel' && plantao.vagasDisponiveis > 0;
 
@@ -111,7 +147,26 @@ function PlantaoCard({ plantao, isMedico, onInscricao, isLoading }: PlantaoCardP
             {plantao.especialidade}
           </p>
         </div>
-        <StatusBadge status={plantao.status} />
+        <div className="flex items-center gap-2">
+          <StatusBadge status={plantao.status} />
+          {canDelete && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => onDelete(plantao.id)}
+              disabled={isDeleting}
+              className="text-red-500 hover:text-red-700 hover:bg-red-50"
+              title="Excluir plantão"
+            >
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Details Grid */}
