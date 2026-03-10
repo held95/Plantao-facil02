@@ -47,7 +47,7 @@ export const awsSnsService = {
   ): Promise<SendSMSResult> {
     if (!SMS_ENABLED) {
       console.log('[awsSnsService] SMS notifications disabled. Skipping SMS send.');
-      return { success: true };
+      return { success: false, error: 'SMS_DISABLED' };
     }
 
     if (!process.env.AWS_REGION || !process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {
@@ -103,7 +103,7 @@ export const awsSnsService = {
     plantao: Plantao
   ): Promise<SendSMSResult> {
     if (!SMS_ENABLED) {
-      return { success: true };
+      return { success: false, error: 'SMS_DISABLED' };
     }
 
     if (!process.env.AWS_REGION || !process.env.AWS_ACCESS_KEY_ID || !process.env.AWS_SECRET_ACCESS_KEY) {

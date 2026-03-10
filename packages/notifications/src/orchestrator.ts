@@ -1,7 +1,7 @@
 import type { Plantao } from '@plantao/shared';
 import type { NotificationEvent, NotificationRecipient, DeliveryLog } from './types';
 import { awsSesService } from './email/awsSesService';
-import { awsSnsService } from './sms/awsSnsService';
+import { twilioSmsService } from './sms/twilioSmsService';
 import { expoPushService } from './push/expoPushService';
 import crypto from 'crypto';
 
@@ -33,7 +33,7 @@ export async function dispatchPlantaoCreated(
     // SMS
     if (r.smsEnabled && r.phone) {
       try {
-        const res = await awsSnsService.sendPlantaoCriadoSMS(r.phone, r.nome, plantao);
+        const res = await twilioSmsService.sendPlantaoCriadoSMS(r.phone, r.nome, plantao);
         logs.push(await makeLog(r.userId, 'PLANTAO_CREATED', 'sms', {
           messageId: res.messageId,
           error: res.success ? undefined : res.error,

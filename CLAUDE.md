@@ -35,7 +35,7 @@ This is a **pnpm + Turborepo monorepo** with three apps and three shared package
 
 ### Tech Stack
 
-- **Next.js 16 (App Router)** with **React 19** and **TypeScript** — web app
+- **Next.js ^16.1.6 (App Router)** with **React 19** and **TypeScript** — web app
 - **Expo ~53 (expo-router ~4)** with **React Native 0.76** — mobile app
 - **AWS DynamoDB** as primary database (repository pattern, no ORM)
 - **NextAuth v5 (beta)** — Credentials provider, JWT sessions, 30-day expiry
@@ -83,6 +83,7 @@ Plantao-facil02/
     │       ├── auth/         ← NextAuth config + export
     │       ├── aws/dynamo/   ← DynamoDB client
     │       ├── repositories/ ← authRepository (users, push tokens, password reset)
+    │       │                   plantaoRepository (CRUD for plantões; mock + DynamoDB)
     │       └── api/          ← routeGuards (requireAuth, requireRole, etc.)
     └── notifications/        ← @plantao/notifications
         └── src/
@@ -97,17 +98,35 @@ Plantao-facil02/
 
 ### Web App Pages
 
-- `/` — plantões list (home)
+- `/` and `/plantoes` — plantões list (home)
 - `/plantoes/[id]` — shift detail
 - `/criar` — create plantão (coordenador/admin)
 - `/gerenciar` — manage plantões (coordenador/admin)
+- `/gerenciar/aprovacoes` — approve/reject pending user registrations (admin/coordenador)
 - `/inscricoes` — médico's own inscriptions
 - `/calendario` — calendar view
 - `/coordenadores` — coordenador management (admin)
 - `/notificacoes` — notification center
 - `/logs` — audit logs (admin)
-- `/documents` — documents section
+- `/documents`, `/documents/[id]` — documents section
 - `/login`, `/signup`, `/forgot-password`, `/reset-password` — auth flows
+
+### API Routes
+
+- `GET /api/plantoes` — list all plantões (auth required)
+- `POST /api/plantoes` — create plantão; body accepts `notificationChannels: 'sms'|'email'|'ambos'` (coordenador/admin)
+- `DELETE /api/plantoes/[id]` — delete plantão (creator or admin)
+- `POST /api/plantoes/[id]/inscricao` — apply for a shift; `DELETE` to cancel
+- `GET /api/admin/pending-users` — list pending registrations (admin/coordenador)
+- `POST /api/admin/pending-users/[id]/approve` — approve user
+- `POST /api/admin/pending-users/[id]/reject` — reject user
+- `GET|POST /api/coordenadores` — list/create coordenadores
+- `GET /api/logs` — audit log entries
+- `POST /api/auth/register` — register new user
+- `POST /api/auth/forgot-password` — initiate password reset
+- `POST /api/auth/reset-password` — complete password reset with token
+- `POST /api/push-tokens` — register Expo push token; `DELETE` to remove
+- `GET /api/test/send-email` — dev endpoint to test AWS SES
 
 ### Authentication & Authorization
 
@@ -119,7 +138,7 @@ Plantao-facil02/
 
 ### Database (DynamoDB)
 
-Tables: `plantao_users` and `plantao_password_reset_tokens`
+Tables: `plantao_users`, `plantao_password_reset_tokens`, and `plantao_plantoes` (configured via `AWS_DYNAMODB_PLANTOES_TABLE`)
 
 Toggle between real DynamoDB and in-memory mocks via `AUTH_SOURCE` env var:
 - `AUTH_SOURCE=mock` — uses in-memory seed data in `authRepository.ts` (no AWS credentials needed)
@@ -151,7 +170,7 @@ Key variables for `apps/web`:
 NEXTAUTH_URL, NEXTAUTH_SECRET
 AUTH_SOURCE=mock|dynamodb
 AWS_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY
-AWS_DYNAMODB_USERS_TABLE, AWS_DYNAMODB_RESET_TABLE, AWS_DYNAMODB_USERS_EMAIL_GSI
+AWS_DYNAMODB_USERS_TABLE, AWS_DYNAMODB_RESET_TABLE, AWS_DYNAMODB_USERS_EMAIL_GSI, AWS_DYNAMODB_PLANTOES_TABLE
 ENABLE_EMAIL_NOTIFICATIONS=true|false
 AWS_SES_FROM_EMAIL, AWS_SES_REPLY_TO
 ENABLE_SMS_NOTIFICATIONS=true|false

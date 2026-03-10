@@ -28,14 +28,9 @@ export function getPlantaoCriadoMessage(plantao: Plantao): SMSTemplate {
     : '0,00';
 
   const message =
-    `📢 Vagas Disponíveis para Plantão Médico\n` +
-    `🩺 Especialidade: ${plantao.especialidade}\n` +
-    `🏥 ${plantao.hospital}\n` +
-    `📅 ${data}\n` +
-    `⏰ ${plantao.horarioInicio} às ${plantao.horarioFim}\n` +
-    `💰 Remuneração: R$ ${valor}\n` +
-    `Garanta sua vaga acessando:\n` +
-    `🔗 ${LOGIN_URL}`;
+    `Plantao Facil: ${plantao.especialidade} - ${plantao.hospital}` +
+    ` em ${data} ${plantao.horarioInicio}-${plantao.horarioFim}` +
+    `. R$${valor}. Acesse: ${LOGIN_URL}`;
 
   return createTemplate(message);
 }
