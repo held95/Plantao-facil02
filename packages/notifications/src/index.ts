@@ -24,7 +24,13 @@ export type { UserSource } from './sms/notificationHelpers';
 export { expoPushService } from './push/expoPushService';
 
 // Orchestrator
-export { dispatchPlantaoCreated } from './orchestrator';
+export {
+  dispatchPlantaoCreated,
+  dispatchDocumentoCriado,
+  dispatchSwapProposto,
+  dispatchSwapAceito,
+  dispatchSwapRejeitado,
+} from './orchestrator';
 
 // Provider interfaces
 export type { SmsProvider, EmailProvider, PushProvider, SendResult } from './providers/types';
@@ -38,6 +44,10 @@ export type {
   DeliveryLog,
 } from './types';
 
+// SMS templates
+export { getDocumentoCriadoMessage } from './sms/templates';
+
 // Email templates
 export { default as PlantaoCriadoEmail } from './templates/PlantaoCriadoEmail';
 export { default as InscricaoConfirmadaEmail } from './templates/InscricaoConfirmadaEmail';
+export { default as DocumentoCriadoEmail } from './templates/DocumentoCriadoEmail';

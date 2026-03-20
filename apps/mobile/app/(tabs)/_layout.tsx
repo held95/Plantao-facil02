@@ -13,15 +13,22 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Plantões',
-          tabBarLabel: 'Plantões',
+          title: 'Plantoes',
+          tabBarLabel: 'Plantoes',
+        }}
+      />
+      <Tabs.Screen
+        name="documentos"
+        options={{
+          title: 'Documentos',
+          tabBarLabel: 'Documentos',
         }}
       />
       <Tabs.Screen
         name="notifications"
         options={{
-          title: 'Notificações',
-          tabBarLabel: 'Notificações',
+          title: 'Notificacoes',
+          tabBarLabel: 'Notificacoes',
         }}
       />
     </Tabs>

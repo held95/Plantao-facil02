@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@plantao/backend';
+import { auth, plantaoRepository } from '@plantao/backend';
 import { mockPlantoes } from '@/lib/data/mockPlantoes';
 import { awsSesService } from '@plantao/notifications';
 import { awsSnsService } from '@plantao/notifications';
+import { detectScheduleConflict } from '@plantao/shared';
 
 // POST /api/plantoes/[id]/inscricao - Register for a plantão
 export async function POST(
@@ -51,6 +52,25 @@ export async function POST(
         { error: 'Não há vagas disponíveis para este plantão' },
         { status: 400 }
       );
+    }
+
+    // Conflict detection: check if doctor has overlapping plantoes
+    const userId = session.user.id as string;
+    try {
+      const medicoPlantoes = await plantaoRepository.listByMedicoId(userId);
+      for (const existing of medicoPlantoes) {
+        if (existing.id !== plantaoId && detectScheduleConflict(plantao, existing)) {
+          return NextResponse.json(
+            {
+              error: 'Conflito de horario',
+              conflitoCom: existing,
+            },
+            { status: 409 }
+          );
+        }
+      }
+    } catch (conflictErr) {
+      console.warn('[inscricao] Could not run conflict detection:', conflictErr);
     }
 
     // In production:

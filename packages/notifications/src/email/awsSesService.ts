@@ -2,6 +2,7 @@ import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import { render } from '@react-email/render';
 import PlantaoCriadoEmail from '../templates/PlantaoCriadoEmail';
 import InscricaoConfirmadaEmail from '../templates/InscricaoConfirmadaEmail';
+import DocumentoCriadoEmail from '../templates/DocumentoCriadoEmail';
 import type { Plantao } from '@plantao/shared';
 
 let sesClient: SESClient | null = null;
@@ -195,5 +196,30 @@ export const awsSesService = {
 
   async sendLembrete1h(): Promise<SendEmailResult> {
     return { success: true };
+  },
+
+  async sendDocumentoCriadoEmail(
+    medicoEmail: string,
+    medicoNome: string,
+    coordenadorNome: string,
+    plantaoHospital: string,
+    documentoTitulo: string,
+    plantaoUrl: string
+  ): Promise<SendEmailResult> {
+    const emailHtml = await render(
+      DocumentoCriadoEmail({
+        medicoNome,
+        coordenadorNome,
+        plantaoHospital,
+        documentoTitulo,
+        plantaoUrl,
+      })
+    );
+
+    return sendHtmlEmail({
+      to: medicoEmail,
+      subject: `Novo documento: ${documentoTitulo} — ${plantaoHospital}`,
+      html: emailHtml,
+    });
   },
 };

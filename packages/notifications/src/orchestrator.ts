@@ -1,4 +1,4 @@
-import type { Plantao } from '@plantao/shared';
+import type { Plantao, PlantaoDocumento } from '@plantao/shared';
 import type { NotificationEvent, NotificationRecipient, DeliveryLog } from './types';
 import { awsSesService } from './email/awsSesService';
 import { twilioSmsService } from './sms/twilioSmsService';
@@ -75,4 +75,97 @@ export async function dispatchPlantaoCreated(
   }
 
   return logs;
+}
+
+export async function dispatchDocumentoCriado(
+  documento: PlantaoDocumento,
+  recipients: NotificationRecipient[]
+): Promise<DeliveryLog[]> {
+  const logs: DeliveryLog[] = [];
+
+  for (const r of recipients) {
+    // SMS
+    if (r.smsEnabled && r.phone) {
+      try {
+        const { getDocumentoCriadoMessage } = await import('./sms/templates');
+        const template = getDocumentoCriadoMessage({
+          medicoNome: r.nome,
+          plantaoHospital: documento.plantaoId,
+          documentoTitulo: documento.titulo,
+        });
+        const res = await twilioSmsService.sendCustomSMS(r.phone, template.body);
+        logs.push(await makeLog(r.userId, 'DOCUMENTO_CRIADO', 'sms', {
+          messageId: res.messageId,
+          error: res.success ? undefined : res.error,
+        }));
+      } catch (err: any) {
+        logs.push(await makeLog(r.userId, 'DOCUMENTO_CRIADO', 'sms', { error: err.message }));
+      }
+    }
+
+    // Email
+    if (r.emailEnabled && r.email) {
+      try {
+        const appUrl = process.env.NEXTAUTH_URL || process.env.APP_BASE_URL || 'https://plantaofacil.com';
+        const plantaoUrl = `${appUrl}/plantoes/${documento.plantaoId}?tab=documentos`;
+        const res = await awsSesService.sendDocumentoCriadoEmail(
+          r.email,
+          r.nome,
+          documento.uploadedByNome || 'Coordenador',
+          documento.plantaoId,
+          documento.titulo,
+          plantaoUrl
+        );
+        logs.push(await makeLog(r.userId, 'DOCUMENTO_CRIADO', 'email', {
+          messageId: res.messageId,
+          error: res.success ? undefined : res.error,
+        }));
+      } catch (err: any) {
+        logs.push(await makeLog(r.userId, 'DOCUMENTO_CRIADO', 'email', { error: err.message }));
+      }
+    }
+
+    // Push
+    if (r.pushEnabled && r.pushTokens?.length) {
+      try {
+        const results = await expoPushService.send(
+          r.pushTokens,
+          'Novo Documento Disponivel',
+          `${documento.titulo} — acesse o plantao para visualizar`,
+          { plantaoId: documento.plantaoId, documentoId: documento.id }
+        );
+        for (const res of results) {
+          logs.push(await makeLog(r.userId, 'DOCUMENTO_CRIADO', 'push', res));
+        }
+      } catch (err: any) {
+        logs.push(await makeLog(r.userId, 'DOCUMENTO_CRIADO', 'push', { error: err.message }));
+      }
+    }
+  }
+
+  return logs;
+}
+
+export async function dispatchSwapProposto(
+  swapId: string,
+  recipients: NotificationRecipient[]
+): Promise<DeliveryLog[]> {
+  console.log('[dispatchSwapProposto] stub — swapId:', swapId, 'recipients:', recipients.length);
+  return [];
+}
+
+export async function dispatchSwapAceito(
+  swapId: string,
+  recipients: NotificationRecipient[]
+): Promise<DeliveryLog[]> {
+  console.log('[dispatchSwapAceito] stub — swapId:', swapId, 'recipients:', recipients.length);
+  return [];
+}
+
+export async function dispatchSwapRejeitado(
+  swapId: string,
+  recipients: NotificationRecipient[]
+): Promise<DeliveryLog[]> {
+  console.log('[dispatchSwapRejeitado] stub — swapId:', swapId, 'recipients:', recipients.length);
+  return [];
 }

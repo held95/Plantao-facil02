@@ -6,17 +6,20 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { RecurrenceForm } from '@/components/plantoes/RecurrenceForm';
 import { Calendar, Clock, MapPin, DollarSign, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { plantaoApi } from '@/lib/api/plantoes';
 import { usePlantaoStore } from '@/stores/plantaoStore';
-import { validatePlantaoForm, PlantaoFormData } from '@plantao/shared';
+import { validatePlantaoForm, PlantaoFormData, type RecurrenceRule } from '@plantao/shared';
 
 export default function CriarPlantaoPage() {
   const router = useRouter();
   const { addPlantao } = usePlantaoStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [recurrenceEnabled, setRecurrenceEnabled] = useState(false);
+  const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | null>(null);
 
   const [formData, setFormData] = useState<PlantaoFormData>({
     titulo: '',
@@ -55,15 +58,52 @@ export default function CriarPlantaoPage() {
     setIsSubmitting(true);
 
     try {
-      // Submit to API
+      if (recurrenceEnabled && recurrenceRule) {
+        // Submit to recorrentes route
+        const vagasTotal = parseInt(formData.vagasTotal as string, 10) || 1;
+        const valor = parseFloat(formData.valor as string) || 0;
+        const res = await fetch('/api/plantoes/recorrentes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            plantaoBase: {
+              hospital: formData.hospital,
+              especialidade: formData.especialidade,
+              data: formData.data,
+              horarioInicio: formData.horarioInicio,
+              horarioFim: formData.horarioFim,
+              valor,
+              descricao: formData.descricao,
+              cidade: formData.cidade,
+              estado: formData.estado,
+              vagasTotal,
+            },
+            recurrenceRule,
+          }),
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          toast.error(data.error || 'Erro ao criar plantoes recorrentes.');
+          return;
+        }
+
+        const data = await res.json();
+        toast.success(`${data.count} plantoes recorrentes criados com sucesso!`);
+        router.push('/plantoes');
+        return;
+      }
+
+      // Submit to API (single)
       const response = await plantaoApi.create(formData);
 
       // Update local store
       addPlantao(response.plantao);
 
       // Show success toast
-      toast.success(response.message || 'Plantão criado com sucesso!', {
-        description: 'O plantão está disponível no calendário.',
+      toast.success(response.message || 'Plantao criado com sucesso!', {
+        description: 'O plantao esta disponivel no calendario.',
       });
 
       // Redirect to plantões list
@@ -353,6 +393,16 @@ export default function CriarPlantaoPage() {
                       required
                     />
                   </div>
+                </div>
+
+                {/* Recorrencia */}
+                <div>
+                  <RecurrenceForm
+                    value={recurrenceRule}
+                    onChange={setRecurrenceRule}
+                    enabled={recurrenceEnabled}
+                    onEnabledChange={setRecurrenceEnabled}
+                  />
                 </div>
 
                 {/* Canal de Notificacao */}

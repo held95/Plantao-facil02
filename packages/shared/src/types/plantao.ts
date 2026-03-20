@@ -1,4 +1,5 @@
 // Tipos para o sistema de Plantões Médicos
+import type { RecurrenceRule } from './recurrence';
 
 export interface Plantao {
   id: string;
@@ -16,6 +17,8 @@ export interface Plantao {
   cidade: string;
   estado: string;
   criadoPor?: string; // userId de quem criou o plantão
+  recurrenceId?: string;
+  recurrenceRule?: RecurrenceRule;
 }
 
 export interface InscricaoPlantao {

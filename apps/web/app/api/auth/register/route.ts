@@ -9,6 +9,10 @@ export async function POST(request: NextRequest) {
     const email = (body?.email || '').trim().toLowerCase();
     const senha = body?.senha || '';
     const telefone = (body?.telefone || '').trim() || undefined;
+    const emailOptIn = body?.emailOptIn === true;
+    const smsOptIn = body?.smsOptIn === true;
+    const pushOptIn = body?.pushOptIn === true;
+    const privacyAcceptedAt = body?.privacyAcceptedAt || undefined;
 
     if (!email || !senha) {
       return NextResponse.json(
@@ -42,6 +46,10 @@ export async function POST(request: NextRequest) {
       email,
       passwordHash,
       telefone,
+      emailOptIn,
+      smsOptIn,
+      pushOptIn,
+      privacyAcceptedAt,
     });
 
     const emailResult = await awsSesService.sendCadastroRecebidoEmail(email);

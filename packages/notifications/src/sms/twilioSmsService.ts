@@ -94,4 +94,37 @@ export const twilioSmsService = {
       return { success: false, error: err.message };
     }
   },
+
+  async sendCustomSMS(phone: string, body: string): Promise<SendSMSResult> {
+    if (!SMS_ENABLED) {
+      return { success: false, error: 'SMS_DISABLED' };
+    }
+
+    const client = getTwilioClient();
+    if (!client) {
+      return { success: false, error: 'Twilio credentials not configured' };
+    }
+
+    if (!validateBrazilianPhone(phone)) {
+      return { success: false, error: 'Invalid phone number format' };
+    }
+
+    const toPhone = formatToBrazilianE164(phone);
+    if (!toPhone) {
+      return { success: false, error: 'Failed to format phone number' };
+    }
+
+    try {
+      const msg = await client.messages.create({
+        body,
+        from: process.env.TWILIO_FROM_NUMBER!,
+        to: toPhone,
+      });
+      console.log(`[twilioSmsService] Custom SMS sent: ${msg.sid}`);
+      return { success: true, messageId: msg.sid };
+    } catch (err: any) {
+      console.error('[twilioSmsService] Error sending custom SMS:', err.message);
+      return { success: false, error: err.message };
+    }
+  },
 };

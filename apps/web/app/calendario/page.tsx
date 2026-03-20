@@ -17,6 +17,7 @@ import { filterPlantoesByLocal, filterPlantoesByStatus } from '@plantao/shared';
 import { getStatusDisplay } from '@plantao/shared';
 import { mockPlantoes } from '@/lib/data/mockPlantoes';
 import { usePlantoes } from '@/hooks/usePlantoes';
+import { ExportButton } from '@/components/plantoes/ExportButton';
 
 // Parse date string as local time — handles 'YYYY-MM-DD' and ISO formats
 function parseDateLocal(dateStr: string): Date {
@@ -99,14 +100,17 @@ export default function CalendarioPage() {
               Visualize e gerencie todos os plantões em um calendário interativo
             </p>
           </div>
-          <Button
-            variant="outline"
-            onClick={handleToday}
-            className="bg-white shadow-sm hover:shadow-md transition-all hover:bg-blue-50 hover:border-blue-300"
-          >
-            <span className="mr-2">📅</span>
-            Hoje
-          </Button>
+          <div className="flex items-center gap-2">
+            <ExportButton />
+            <Button
+              variant="outline"
+              onClick={handleToday}
+              className="bg-white shadow-sm hover:shadow-md transition-all hover:bg-blue-50 hover:border-blue-300"
+            >
+              <span className="mr-2">📅</span>
+              Hoje
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}

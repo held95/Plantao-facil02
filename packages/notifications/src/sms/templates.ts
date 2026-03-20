@@ -102,3 +102,14 @@ export function getNotificacaoGeralMessage(
 
   return createTemplate(message);
 }
+
+export function getDocumentoCriadoMessage(params: {
+  medicoNome: string;
+  plantaoHospital: string;
+  documentoTitulo: string;
+}): SMSTemplate {
+  const { plantaoHospital, documentoTitulo } = params;
+  const message = `Plantao Facil: Novo doc "${documentoTitulo}" disponivel em ${plantaoHospital}. Acesse: ${LOGIN_URL}`;
+
+  return createTemplate(message);
+}

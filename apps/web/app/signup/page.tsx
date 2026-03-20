@@ -7,6 +7,7 @@ import { Loader2, UserPlus } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { ConsentCheckboxes, type ConsentValues } from '@/components/auth/ConsentCheckboxes';
 import { toast } from 'sonner';
 
 export default function SignupPage() {
@@ -17,6 +18,12 @@ export default function SignupPage() {
     senha: '',
     confirmarSenha: '',
     telefone: '',
+  });
+  const [consent, setConsent] = useState<ConsentValues>({
+    emailOptIn: false,
+    smsOptIn: false,
+    pushOptIn: false,
+    privacyAccepted: false,
   });
 
   const set = (field: keyof typeof form, value: string) =>
@@ -33,6 +40,10 @@ export default function SignupPage() {
       toast.error('A senha deve ter pelo menos 6 caracteres.');
       return;
     }
+    if (!consent.privacyAccepted) {
+      toast.error('Voce deve aceitar a Politica de Privacidade para continuar.');
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -43,6 +54,10 @@ export default function SignupPage() {
           email: form.email,
           senha: form.senha,
           telefone: form.telefone || undefined,
+          emailOptIn: consent.emailOptIn,
+          smsOptIn: consent.smsOptIn,
+          pushOptIn: consent.pushOptIn,
+          privacyAcceptedAt: new Date().toISOString(),
         }),
       });
 
@@ -149,6 +164,10 @@ export default function SignupPage() {
                   />
                 </div>
               </div>
+            </div>
+
+            <div className="rounded-lg bg-slate-50 border border-slate-200 p-4">
+              <ConsentCheckboxes value={consent} onChange={setConsent} />
             </div>
 
             <div className="rounded-lg bg-slate-50 border border-slate-200 p-3">

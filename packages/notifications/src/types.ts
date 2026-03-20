@@ -3,7 +3,11 @@ export type NotificationEvent =
   | 'INSCRICAO_CONFIRMADA'
   | 'CONTA_APROVADA'
   | 'CONTA_REJEITADA'
-  | 'RESET_SENHA';
+  | 'RESET_SENHA'
+  | 'DOCUMENTO_CRIADO'
+  | 'SWAP_PROPOSTO'
+  | 'SWAP_ACEITO'
+  | 'SWAP_REJEITADO';
 
 export type NotificationChannel = 'sms' | 'email' | 'push';
 export type DeliveryStatus = 'pending' | 'sent' | 'failed';

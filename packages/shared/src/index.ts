@@ -1,5 +1,6 @@
 // Types
 export * from './types/plantao';
+export * from './types/plantaoDocumento';
 export * from './types/user';
 export * from './types/auth';
 export * from './types/authUser';
@@ -9,6 +10,8 @@ export * from './types/sms';
 export * from './types/coordenador';
 export * from './types/log';
 export * from './types/pushToken';
+export * from './types/swapRequest';
+export * from './types/recurrence';
 
 // Utils
 export * from './utils/date';
@@ -18,6 +21,7 @@ export * from './utils/status';
 export * from './utils/calendar';
 export * from './utils/filters';
 export * from './utils/cn';
+export * from './utils/conflictDetection';
 
 // Validation
 export * from './validation/plantaoValidation';

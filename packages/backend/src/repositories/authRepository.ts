@@ -209,10 +209,18 @@ export const authUserRepository = {
     email,
     passwordHash,
     telefone,
+    emailOptIn,
+    smsOptIn,
+    pushOptIn,
+    privacyAcceptedAt,
   }: {
     email: string;
     passwordHash: string;
     telefone?: string;
+    emailOptIn?: boolean;
+    smsOptIn?: boolean;
+    pushOptIn?: boolean;
+    privacyAcceptedAt?: string;
   }): Promise<AuthUserRecord> {
     const now = new Date().toISOString();
     const emailLower = normalizeEmail(email);
@@ -229,6 +237,10 @@ export const authUserRepository = {
       updatedAt: now,
       pushTokens: [],
       ...(telefone ? { telefone } : {}),
+      ...(emailOptIn !== undefined ? { emailOptIn } : {}),
+      ...(smsOptIn !== undefined ? { smsOptIn } : {}),
+      ...(pushOptIn !== undefined ? { pushOptIn } : {}),
+      ...(privacyAcceptedAt ? { privacyAcceptedAt } : {}),
     };
 
     if (isUsingDynamo()) {
@@ -552,6 +564,54 @@ export const authUserRepository = {
     tokens.delete(token);
     mockAuthUsers.set(userId, { ...user, pushTokens: Array.from(tokens) });
     mockPushTokens.get(userId)?.delete(token);
+  },
+
+  async deleteUserData(userId: string): Promise<void> {
+    const now = new Date().toISOString();
+    const anonymizedEmail = `deleted-${userId}@anonimizado.invalid`;
+    const anonymizedNome = 'Usuario Anonimizado';
+
+    if (isUsingDynamo()) {
+      ensureDynamoConfig();
+      const client = getDynamoDocumentClient();
+      await client.send(
+        new UpdateCommand({
+          TableName: usersTable,
+          Key: { pk: buildUserPk(userId) },
+          UpdateExpression:
+            'SET #email = :email, emailLower = :emailLower, nome = :nome, telefone = :none, #status = :deleted, updatedAt = :updatedAt REMOVE passwordHash, pushTokens',
+          ExpressionAttributeNames: {
+            '#email': 'email',
+            '#status': 'status',
+          },
+          ExpressionAttributeValues: {
+            ':email': anonymizedEmail,
+            ':emailLower': anonymizedEmail,
+            ':nome': anonymizedNome,
+            ':none': null,
+            ':deleted': 'deletado',
+            ':updatedAt': now,
+          },
+          ConditionExpression: 'attribute_exists(pk)',
+        })
+      );
+      return;
+    }
+
+    const user = mockAuthUsers.get(userId);
+    if (!user) return;
+    mockAuthUsers.set(userId, {
+      ...user,
+      email: anonymizedEmail,
+      emailLower: anonymizedEmail,
+      nome: anonymizedNome,
+      telefone: undefined,
+      passwordHash: '',
+      pushTokens: [],
+      updatedAt: now,
+      status: 'rejeitado',
+    });
+    mockPushTokens.delete(userId);
   },
 
   async getPushTokensByUsers(

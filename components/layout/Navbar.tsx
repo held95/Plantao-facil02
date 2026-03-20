@@ -14,11 +14,14 @@ import {
   ClipboardList,
   Activity,
   UserCheck,
+  Mail,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { NotificationDropdown } from '@/components/layout/NotificationDropdown';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useMensagensUnreadCount } from '@/hooks/useMensagens';
+import { useMensagensStore } from '@/stores/mensagensStore';
 import { Logo } from '@/components/common/Logo';
 
 export function Navbar() {
@@ -26,14 +29,17 @@ export function Navbar() {
   const { data: session, status } = useSession();
   const user = session?.user;
   const { unreadCount, toggleDropdown } = useNotificationStore();
+  const { unreadCount: mensagensUnread } = useMensagensStore();
 
   useNotifications();
+  useMensagensUnreadCount();
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/calendario', label: 'Calendario', icon: Calendar },
     { href: '/criar', label: 'Criar Plantao', icon: Plus },
     { href: '/inscricoes', label: 'Minhas Inscricoes', icon: FileText },
+    { href: '/mensagens', label: 'Mensagens', icon: Mail },
     { href: '/notificacoes', label: 'Notificacoes', icon: Bell },
     { href: '/gerenciar', label: 'Gerenciar Inscricoes', icon: ClipboardList },
     { href: '/gerenciar/aprovacoes', label: 'Aprovar Contas', icon: UserCheck },
@@ -72,7 +78,7 @@ export function Navbar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center space-x-2 text-sm font-medium transition-all px-3 py-2 rounded-md ${
+                  className={`relative flex items-center space-x-2 text-sm font-medium transition-all px-3 py-2 rounded-md ${
                     isActive
                       ? 'bg-slate-700 text-white'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
@@ -80,6 +86,14 @@ export function Navbar() {
                 >
                   <Icon className="h-4 w-4" />
                   <span>{item.label}</span>
+                  {item.href === '/mensagens' && mensagensUnread > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="h-4 min-w-4 p-0 px-1 flex items-center justify-center text-xs"
+                    >
+                      {mensagensUnread > 9 ? '9+' : mensagensUnread}
+                    </Badge>
+                  )}
                 </Link>
               );
             })}

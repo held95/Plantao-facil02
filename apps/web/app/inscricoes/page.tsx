@@ -1,12 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs } from '@/components/ui/tabs';
-import { Calendar, Clock, MapPin, Hospital, DollarSign, X } from 'lucide-react';
+import { SwapRequestList } from '@/components/plantoes/SwapRequestList';
+import { useSwapRequestsByUser } from '@/hooks/useSwapRequests';
+import { Calendar, Clock, MapPin, Hospital, DollarSign, X, ArrowLeftRight } from 'lucide-react';
 
 // Mock data para inscricoes
 const mockInscricoes = [
@@ -62,6 +65,9 @@ const mockInscricoes = [
 
 export default function InscricoesPage() {
   const [activeTab, setActiveTab] = useState('todas');
+  const { data: session } = useSession();
+  const userId = session?.user?.id as string | undefined;
+  const { data: swaps = [] } = useSwapRequestsByUser(userId ?? '');
 
   const handleCancelarInscricao = (id: string) => {
     if (confirm('Tem certeza que deseja cancelar esta inscricao?')) {
@@ -237,6 +243,22 @@ export default function InscricoesPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* Trocas Pendentes */}
+        <div className="mt-10">
+          <div className="flex items-center gap-2 mb-4">
+            <ArrowLeftRight className="h-5 w-5 text-gray-700" />
+            <h2 className="text-xl font-bold text-gray-900">Trocas Pendentes</h2>
+          </div>
+          {userId ? (
+            <SwapRequestList
+              swaps={swaps}
+              currentUserId={userId}
+            />
+          ) : (
+            <p className="text-gray-500 text-sm">Faca login para ver suas trocas.</p>
+          )}
+        </div>
       </div>
     </div>
   );

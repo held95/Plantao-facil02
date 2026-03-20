@@ -28,6 +28,13 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={inter.className}>
         <Providers>{children}</Providers>
+        <footer className="border-t border-gray-200 bg-white py-4 mt-auto">
+          <div className="container mx-auto px-6 text-center text-xs text-gray-500">
+            <a href="/privacidade" className="hover:text-gray-700 hover:underline">
+              Politica de Privacidade
+            </a>
+          </div>
+        </footer>
       </body>
     </html>
   );

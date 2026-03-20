@@ -14,6 +14,10 @@ export interface AuthUserRecord {
   approvedBy?: string;
   telefone?: string;
   pushTokens?: string[];
+  emailOptIn?: boolean;
+  smsOptIn?: boolean;
+  pushOptIn?: boolean;
+  privacyAcceptedAt?: string;
 }
 
 export interface PendingUserSummary {

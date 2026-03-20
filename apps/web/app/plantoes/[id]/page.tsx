@@ -2,10 +2,15 @@
 
 import { use, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Tabs } from '@/components/ui/tabs';
+import { DocumentList } from '@/components/documentos/DocumentList';
+import { SwapRequestModal } from '@/components/plantoes/SwapRequestModal';
 import { getPlantaoPorId } from '@/lib/data/mockPlantoes';
 import { formatDate, formatDateFull } from '@plantao/shared';
 import {
@@ -18,6 +23,7 @@ import {
   Stethoscope,
   CheckCircle2,
   AlertCircle,
+  ArrowLeftRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -29,6 +35,16 @@ export default function PlantaoDetailPage({
   const { id } = use(params);
   const plantao = getPlantaoPorId(id);
   const [inscrito, setInscrito] = useState(false);
+  const [showSwapModal, setShowSwapModal] = useState(false);
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+
+  const initialTab = searchParams.get('tab') === 'documentos' ? 'documentos' : 'informacoes';
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  const canUpload =
+    session?.user?.role === 'coordenador' || session?.user?.role === 'admin';
+  const isMedico = session?.user?.role === 'medico';
 
   const handleInscrever = () => {
     setInscrito(true);
@@ -65,12 +81,88 @@ export default function PlantaoDetailPage({
     return duracao;
   };
 
+  const informacoesContent = (
+    <div className="space-y-6">
+      <Card className="border-gray-200 shadow-sm">
+        <CardHeader>
+          <div className="flex items-center gap-2 mb-3">
+            <Badge variant="default" className="bg-blue-600">
+              {plantao.especialidade}
+            </Badge>
+            <Badge variant={plantao.vagasDisponiveis > 0 ? 'success' : 'destructive'} className="border-gray-300">
+              {plantao.vagasDisponiveis > 0
+                ? `${plantao.vagasDisponiveis} ${plantao.vagasDisponiveis === 1 ? 'vaga disponível' : 'vagas disponíveis'}`
+                : 'Sem vagas'}
+            </Badge>
+          </div>
+
+          <CardTitle className="text-3xl mb-2 text-gray-900">{plantao.hospital}</CardTitle>
+          <CardDescription className="text-base text-gray-600">
+            {plantao.cidade} - {plantao.estado}
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          {plantao.descricao && (
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">Descrição</h3>
+              <p className="text-gray-600">{plantao.descricao}</p>
+            </div>
+          )}
+
+          {plantao.requisitos && plantao.requisitos.length > 0 && (
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-3">Requisitos</h3>
+              <ul className="space-y-2">
+                {plantao.requisitos.map((req, index) => (
+                  <li key={index} className="flex items-start gap-2 text-gray-600">
+                    <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 shrink-0" />
+                    <span>{req}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="border-gray-200 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-gray-900">Informações do Plantão</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid md:grid-cols-2 gap-6">
+            <InfoItem icon={<Calendar />} label="Data" value={formatDateFull(plantao.data)} />
+            <InfoItem
+              icon={<Clock />}
+              label="Horário"
+              value={`${plantao.horarioInicio} às ${plantao.horarioFim} (${calcularDuracao()}h)`}
+            />
+            <InfoItem
+              icon={<MapPin />}
+              label="Localização"
+              value={`${plantao.cidade} - ${plantao.estado}`}
+            />
+            <InfoItem icon={<Hospital />} label="Hospital" value={plantao.hospital} />
+            <InfoItem icon={<Stethoscope />} label="Especialidade" value={plantao.especialidade} />
+            <InfoItem
+              icon={<DollarSign />}
+              label="Valor"
+              value={`R$ ${plantao.valor.toLocaleString('pt-BR')}`}
+              valueClassName="text-green-600 font-semibold"
+            />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
   return (
+    <>
     <div className="min-h-screen bg-white">
       <Navbar />
 
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Back Button */}
         <div className="mb-6">
           <Link href="/plantoes">
             <Button variant="outline" size="sm" className="border-gray-300">
@@ -81,80 +173,21 @@ export default function PlantaoDetailPage({
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Main Info */}
-          <div className="lg:col-span-2 space-y-6">
-            <Card className="border-gray-200 shadow-sm">
-              <CardHeader>
-                <div className="flex items-center gap-2 mb-3">
-                  <Badge variant="default" className="bg-blue-600">
-                    {plantao.especialidade}
-                  </Badge>
-                  <Badge variant={plantao.vagasDisponiveis > 0 ? 'success' : 'destructive'} className="border-gray-300">
-                    {plantao.vagasDisponiveis > 0
-                      ? `${plantao.vagasDisponiveis} ${plantao.vagasDisponiveis === 1 ? 'vaga disponível' : 'vagas disponíveis'}`
-                      : 'Sem vagas'}
-                  </Badge>
-                </div>
-
-                <CardTitle className="text-3xl mb-2 text-gray-900">{plantao.hospital}</CardTitle>
-                <CardDescription className="text-base text-gray-600">
-                  {plantao.cidade} - {plantao.estado}
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent className="space-y-6">
-                {plantao.descricao && (
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-2">Descrição</h3>
-                    <p className="text-gray-600">{plantao.descricao}</p>
-                  </div>
-                )}
-
-                {plantao.requisitos && plantao.requisitos.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-3">Requisitos</h3>
-                    <ul className="space-y-2">
-                      {plantao.requisitos.map((req, index) => (
-                        <li key={index} className="flex items-start gap-2 text-gray-600">
-                          <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                          <span>{req}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Details Grid */}
-            <Card className="border-gray-200 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-gray-900">Informações do Plantão</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-6">
-                  <InfoItem icon={<Calendar />} label="Data" value={formatDateFull(plantao.data)} />
-                  <InfoItem
-                    icon={<Clock />}
-                    label="Horário"
-                    value={`${plantao.horarioInicio} às ${plantao.horarioFim} (${calcularDuracao()}h)`}
-                  />
-                  <InfoItem
-                    icon={<MapPin />}
-                    label="Localização"
-                    value={`${plantao.cidade} - ${plantao.estado}`}
-                  />
-                  <InfoItem icon={<Hospital />} label="Hospital" value={plantao.hospital} />
-                  <InfoItem icon={<Stethoscope />} label="Especialidade" value={plantao.especialidade} />
-                  <InfoItem
-                    icon={<DollarSign />}
-                    label="Valor"
-                    value={`R$ ${plantao.valor.toLocaleString('pt-BR')}`}
-                    valueClassName="text-green-600 font-semibold"
-                  />
-                </div>
-              </CardContent>
-            </Card>
+          <div className="lg:col-span-2">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              tabs={[
+                { value: 'informacoes', label: 'Informações', content: informacoesContent },
+                {
+                  value: 'documentos',
+                  label: 'Documentos',
+                  content: (
+                    <DocumentList plantaoId={id} canUpload={canUpload} />
+                  ),
+                },
+              ]}
+            />
           </div>
 
           {/* Sidebar - Inscrição */}
@@ -209,6 +242,17 @@ export default function PlantaoDetailPage({
                   </div>
                 )}
 
+                {isMedico && inscrito && (
+                  <Button
+                    variant="outline"
+                    className="w-full border-blue-300 text-blue-700 hover:bg-blue-50"
+                    onClick={() => setShowSwapModal(true)}
+                  >
+                    <ArrowLeftRight className="h-4 w-4 mr-2" />
+                    Propor Troca
+                  </Button>
+                )}
+
                 <p className="text-xs text-gray-500 text-center">
                   Ao se inscrever, você concorda com os termos e condições do plantão
                 </p>
@@ -218,6 +262,14 @@ export default function PlantaoDetailPage({
         </div>
       </div>
     </div>
+
+    {showSwapModal && (
+      <SwapRequestModal
+        plantaoOrigemId={id}
+        onClose={() => setShowSwapModal(false)}
+      />
+    )}
+  </>
   );
 }
 

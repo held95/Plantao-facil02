@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { ExportButton } from '@/components/plantoes/ExportButton';
 import { ClipboardList, UserCheck } from 'lucide-react';
 
 export default function GerenciarPage() {
@@ -10,11 +11,14 @@ export default function GerenciarPage() {
       <Navbar />
 
       <div className="container mx-auto px-6 py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Gerenciar</h1>
-          <p className="mt-1 text-sm text-gray-600">
-            Acesse os modulos administrativos de inscricoes e aprovacao de contas.
-          </p>
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Gerenciar</h1>
+            <p className="mt-1 text-sm text-gray-600">
+              Acesse os modulos administrativos de inscricoes e aprovacao de contas.
+            </p>
+          </div>
+          <ExportButton />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

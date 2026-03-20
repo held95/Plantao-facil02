@@ -32,4 +32,8 @@ export interface User {
   ativo: boolean;
   preferenciasNotificacao: NotificationPreferences;
   createdAt: string;
+  emailOptIn?: boolean;
+  smsOptIn?: boolean;
+  pushOptIn?: boolean;
+  privacyAcceptedAt?: string;
 }
