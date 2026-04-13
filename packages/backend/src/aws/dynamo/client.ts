@@ -32,3 +32,7 @@ export function getDynamoDocumentClient(): DynamoDBDocumentClient {
 
   return documentClient;
 }
+
+// Named table constants — mirrors pattern used in plantaoRepository.ts
+export const messagesTable = process.env.AWS_DYNAMODB_MESSAGES_TABLE;
+export const totpTable = process.env.AWS_DYNAMODB_TOTP_TABLE;
