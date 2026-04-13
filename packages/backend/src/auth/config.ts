@@ -19,7 +19,7 @@ export const authConfig: NextAuthConfig = {
 
         if (loginLimiter) {
           const ip =
-            (req as { headers?: Record<string, string> })?.headers?.['x-forwarded-for']
+            (req as unknown as { headers?: Record<string, string> })?.headers?.['x-forwarded-for']
               ?.split(',')[0] ?? '127.0.0.1';
           const { success } = await loginLimiter.limit(ip);
           if (!success) throw new Error('TooManyRequests');
