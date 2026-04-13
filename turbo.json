@@ -22,7 +22,9 @@
         "APP_BASE_URL",
         "NEXT_PUBLIC_API_BASE_URL",
         "NEXT_PUBLIC_APP_NAME",
-        "PASSWORD_RESET_TOKEN_TTL_MINUTES"
+        "PASSWORD_RESET_TOKEN_TTL_MINUTES",
+        "AWS_DYNAMODB_MESSAGES_TABLE",
+        "AWS_DYNAMODB_TOTP_TABLE"
       ]
     },
     "dev": {
