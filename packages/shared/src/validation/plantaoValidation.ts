@@ -10,6 +10,7 @@ export interface PlantaoFormData {
   horarioFim: string;
   cidade: string;
   estado: string;
+  cep?: string;
   valor: string;
   vagasTotal: string;
   status: 'disponivel' | 'preenchido' | 'cancelado';
@@ -62,6 +63,13 @@ export function validatePlantaoForm(data: PlantaoFormData): ValidationError[] {
   // Plantoes noturnos (ex: 19:00 -> 07:00) sao normais na medicina.
   // Nao validamos se termino < inicio pois o plantao pode passar da meia-noite.
 
+  if (data.cep) {
+    const cepDigits = data.cep.replace(/\D/g, '');
+    if (cepDigits.length !== 8) {
+      errors.push({ field: 'cep', message: 'CEP deve ter 8 digitos' });
+    }
+  }
+
   if (!data.cidade?.trim()) {
     errors.push({ field: 'cidade', message: 'Cidade e obrigatoria' });
   }
@@ -108,5 +116,6 @@ export function formatPlantaoForSubmission(
     vagasTotal: parseInt(data.vagasTotal),
     cidade: data.cidade.trim(),
     estado: data.estado,
+    ...(data.cep ? { cep: data.cep.replace(/\D/g, '') } : {}),
   };
 }

@@ -16,6 +16,9 @@ export interface Plantao {
   vagasTotal: number;
   cidade: string;
   estado: string;
+  cep?: string;
+  latitude?: number;
+  longitude?: number;
   criadoPor?: string; // userId de quem criou o plantão
   recurrenceId?: string;
   recurrenceRule?: RecurrenceRule;
