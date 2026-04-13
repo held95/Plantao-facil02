@@ -181,6 +181,12 @@ importers:
       '@plantao/shared':
         specifier: workspace:*
         version: link:../shared
+      '@upstash/ratelimit':
+        specifier: ^2.0.0
+        version: 2.0.8(@upstash/redis@1.37.0)
+      '@upstash/redis':
+        specifier: ^1.34.0
+        version: 1.37.0
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3

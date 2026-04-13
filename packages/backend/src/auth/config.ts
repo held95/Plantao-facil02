@@ -2,6 +2,7 @@ import type { NextAuthConfig } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import { authUserRepository } from '../repositories/authRepository';
+import { loginLimiter } from '../utils/rateLimit';
 
 export const authConfig: NextAuthConfig = {
   providers: [
@@ -11,9 +12,17 @@ export const authConfig: NextAuthConfig = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           return null;
+        }
+
+        if (loginLimiter) {
+          const ip =
+            (req as { headers?: Record<string, string> })?.headers?.['x-forwarded-for']
+              ?.split(',')[0] ?? '127.0.0.1';
+          const { success } = await loginLimiter.limit(ip);
+          if (!success) throw new Error('TooManyRequests');
         }
 
         const user = await authUserRepository.findByEmail(credentials.email as string);
