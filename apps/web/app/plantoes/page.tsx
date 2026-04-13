@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import PlantaoMap from '@/components/plantoes/PlantaoMap';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent } from '@/components/ui/card';
 import { StatusBadge } from '@/components/ui/status-badge';
@@ -140,6 +141,10 @@ export default function PlantoesPage() {
         </Card>
 
         <StatusLegend />
+
+        <div className="mb-6">
+          <PlantaoMap plantoes={filteredPlantoes} />
+        </div>
 
         <div className="mb-4 flex items-center gap-2">
           <Calendar className="h-5 w-5 text-gray-700" />
