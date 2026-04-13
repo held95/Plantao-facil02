@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authUserRepository } from '@plantao/backend';
 import { awsSesService } from '@plantao/notifications';
+import { forgotPasswordLimiter } from '@/lib/rateLimit';
 
 const GENERIC_MESSAGE =
   'Se a conta existir e estiver aprovada, enviaremos um email para redefinir a senha.';
@@ -9,6 +10,12 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const email = (body?.email || '').trim().toLowerCase();
+
+    const { success } = await forgotPasswordLimiter.limit(email || 'unknown');
+    if (!success) {
+      // Retorna mensagem genérica — não revela que limite foi atingido
+      return NextResponse.json({ success: true, message: GENERIC_MESSAGE });
+    }
 
     if (!email) {
       return NextResponse.json({ success: true, message: GENERIC_MESSAGE });
