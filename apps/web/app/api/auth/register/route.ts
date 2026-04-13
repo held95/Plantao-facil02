@@ -2,8 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { authUserRepository } from '@plantao/backend';
 import { awsSesService } from '@plantao/notifications';
+import { registerLimiter, getClientIp } from '@/lib/rateLimit';
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const { success } = await registerLimiter.limit(ip);
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Muitas tentativas. Tente novamente em 15 minutos.' },
+      { status: 429 }
+    );
+  }
+
   try {
     const body = await request.json();
     const email = (body?.email || '').trim().toLowerCase();
