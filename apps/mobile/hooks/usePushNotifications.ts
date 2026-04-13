@@ -14,8 +14,8 @@ export function usePushNotifications(
   onNotificationReceived?: (notification: Notifications.Notification) => void,
   onNotificationResponse?: (response: Notifications.NotificationResponse) => void
 ) {
-  const notificationListener = useRef<Subscription>();
-  const responseListener = useRef<Subscription>();
+  const notificationListener = useRef<Subscription | undefined>(undefined);
+  const responseListener = useRef<Subscription | undefined>(undefined);
 
   useEffect(() => {
     notificationListener.current = Notifications.addNotificationReceivedListener(
