@@ -20,6 +20,8 @@ export default function CriarPlantaoPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [recurrenceEnabled, setRecurrenceEnabled] = useState(false);
   const [recurrenceRule, setRecurrenceRule] = useState<RecurrenceRule | null>(null);
+  const [cepLoading, setCepLoading] = useState(false);
+  const [cepError, setCepError] = useState('');
 
   const [formData, setFormData] = useState<PlantaoFormData>({
     titulo: '',
@@ -31,6 +33,7 @@ export default function CriarPlantaoPage() {
     hospital: '',
     cidade: '',
     estado: 'SP',
+    cep: '',
     especialidade: '',
     valor: '',
     vagasTotal: '',
@@ -77,6 +80,7 @@ export default function CriarPlantaoPage() {
               descricao: formData.descricao,
               cidade: formData.cidade,
               estado: formData.estado,
+              cep: formData.cep,
               vagasTotal,
             },
             recurrenceRule,
@@ -132,6 +136,37 @@ export default function CriarPlantaoPage() {
 
   const handleCancel = () => {
     router.push('/');
+  };
+
+  const handleCepChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let digits = e.target.value.replace(/\D/g, '');
+    if (digits.length > 8) digits = digits.slice(0, 8);
+    const formatted = digits.length > 5 ? `${digits.slice(0, 5)}-${digits.slice(5)}` : digits;
+    setFormData((prev) => ({ ...prev, cep: formatted }));
+    setCepError('');
+    if (errors.cep) setErrors((prev) => { const n = { ...prev }; delete n.cep; return n; });
+  };
+
+  const handleCepBlur = async () => {
+    const digits = (formData.cep ?? '').replace(/\D/g, '');
+    if (digits.length !== 8) return;
+
+    setCepLoading(true);
+    setCepError('');
+    try {
+      const res = await fetch(`https://viacep.com.br/ws/${digits}/json/`);
+      const data = await res.json();
+      if (data.erro) {
+        setCepError('CEP não encontrado. Verifique e tente novamente.');
+        return;
+      }
+      setFormData((prev) => ({ ...prev, cidade: data.localidade, estado: data.uf }));
+      setErrors((prev) => { const n = { ...prev }; delete n.cidade; delete n.estado; return n; });
+    } catch {
+      setCepError('Erro ao buscar CEP. Preencha cidade e estado manualmente.');
+    } finally {
+      setCepLoading(false);
+    }
   };
 
   const handleChange = (
@@ -321,11 +356,38 @@ export default function CriarPlantaoPage() {
                   </div>
                 </div>
 
+                {/* CEP */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <MapPin className="inline h-4 w-4 mr-1" />
+                    CEP do Hospital
+                  </label>
+                  <div className="relative">
+                    <Input
+                      type="text"
+                      name="cep"
+                      value={formData.cep ?? ''}
+                      onChange={handleCepChange}
+                      onBlur={handleCepBlur}
+                      placeholder="00000-000"
+                      maxLength={9}
+                      className={`w-full pr-10 ${errors.cep ? 'border-red-500' : 'border-gray-200'}`}
+                    />
+                    {cepLoading && (
+                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-gray-400" />
+                    )}
+                  </div>
+                  {cepError && <p className="text-sm text-red-600 mt-1">{cepError}</p>}
+                  <ErrorMessage field="cep" />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Digite o CEP para preencher cidade e estado automaticamente
+                  </p>
+                </div>
+
                 {/* Localizacao */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <MapPin className="inline h-4 w-4 mr-1" />
                       Cidade
                     </label>
                     <Input
@@ -333,10 +395,11 @@ export default function CriarPlantaoPage() {
                       name="cidade"
                       value={formData.cidade}
                       onChange={handleChange}
-                      placeholder="Nome da cidade"
-                      className="w-full border-gray-200"
+                      placeholder="Preenchido pelo CEP"
+                      className={`w-full ${errors.cidade ? 'border-red-500' : 'border-gray-200'}`}
                       required
                     />
+                    <ErrorMessage field="cidade" />
                   </div>
 
                   <div>
@@ -347,16 +410,37 @@ export default function CriarPlantaoPage() {
                       name="estado"
                       value={formData.estado}
                       onChange={handleChange}
+                      title="Estado"
                       className="w-full h-10 px-3 py-2 border border-gray-200 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
                     >
-                      <option value="SP">Sao Paulo</option>
-                      <option value="RJ">Rio de Janeiro</option>
-                      <option value="MG">Minas Gerais</option>
+                      <option value="AC">Acre</option>
+                      <option value="AL">Alagoas</option>
+                      <option value="AP">Amapá</option>
+                      <option value="AM">Amazonas</option>
                       <option value="BA">Bahia</option>
-                      <option value="PR">Parana</option>
+                      <option value="CE">Ceará</option>
+                      <option value="DF">Distrito Federal</option>
+                      <option value="ES">Espírito Santo</option>
+                      <option value="GO">Goiás</option>
+                      <option value="MA">Maranhão</option>
+                      <option value="MT">Mato Grosso</option>
+                      <option value="MS">Mato Grosso do Sul</option>
+                      <option value="MG">Minas Gerais</option>
+                      <option value="PA">Pará</option>
+                      <option value="PB">Paraíba</option>
+                      <option value="PR">Paraná</option>
+                      <option value="PE">Pernambuco</option>
+                      <option value="PI">Piauí</option>
+                      <option value="RJ">Rio de Janeiro</option>
+                      <option value="RN">Rio Grande do Norte</option>
                       <option value="RS">Rio Grande do Sul</option>
+                      <option value="RO">Rondônia</option>
+                      <option value="RR">Roraima</option>
                       <option value="SC">Santa Catarina</option>
+                      <option value="SP">São Paulo</option>
+                      <option value="SE">Sergipe</option>
+                      <option value="TO">Tocantins</option>
                     </select>
                   </div>
                 </div>

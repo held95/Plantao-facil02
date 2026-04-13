@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireCoordinator, plantaoRepository } from '@plantao/backend';
 import type { Plantao, RecurrenceRule } from '@plantao/shared';
+import { geocode } from '@/lib/geocoding';
 
 function addDays(dateStr: string, days: number): string {
   const date = new Date(dateStr);
@@ -39,6 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     const recurrenceId = crypto.randomUUID();
+    const coords = await geocode(plantaoBase.cep, plantaoBase.cidade!, plantaoBase.estado!);
     const plantoes: Plantao[] = [];
 
     for (let i = 0; i < occurrences; i++) {
@@ -66,6 +68,8 @@ export async function POST(request: NextRequest) {
         vagasTotal: plantaoBase.vagasTotal ?? 1,
         cidade: plantaoBase.cidade!,
         estado: plantaoBase.estado!,
+        cep: plantaoBase.cep,
+        ...coords,
         criadoPor: session.user.id as string,
         recurrenceId,
         recurrenceRule: i === 0 ? recurrenceRule : undefined,
