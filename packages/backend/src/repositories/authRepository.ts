@@ -7,12 +7,30 @@ import {
 } from '@aws-sdk/lib-dynamodb';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import { Redis } from '@upstash/redis';
 import { getDynamoDocumentClient } from '../aws/dynamo/client';
 import type {
   AuthUserRecord,
   PendingUserSummary,
   UserApprovalStatus,
 } from '@plantao/shared';
+
+// Redis lazy client para armazenamento de tokens em modo não-DynamoDB.
+// Permite que o modo mock funcione em ambientes serverless (Vercel).
+let _redisForTokens: Redis | null | undefined = undefined;
+
+function getRedisForTokens(): Redis | null {
+  if (_redisForTokens !== undefined) return _redisForTokens;
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    _redisForTokens = null;
+    return null;
+  }
+  _redisForTokens = new Redis({
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+  });
+  return _redisForTokens;
+}
 
 // Mock users seeded from shared data — avoids dependency on Next.js env
 const MOCK_USERS_SEED = [
@@ -429,7 +447,13 @@ export const authUserRepository = {
       return rawToken;
     }
 
-    mockResetTokens.set(tokenId, row);
+    const redis = getRedisForTokens();
+    if (redis) {
+      await redis.set(`reset:${tokenId}`, JSON.stringify(row), { ex: ttlMinutes * 60 });
+    } else {
+      console.warn('[authRepository] Redis não configurado — tokens em memória (efêmero em serverless). Defina UPSTASH_REDIS_REST_URL e UPSTASH_REDIS_REST_TOKEN.');
+      mockResetTokens.set(tokenId, row);
+    }
     return rawToken;
   },
 
@@ -470,6 +494,16 @@ export const authUserRepository = {
       } catch {
         return null;
       }
+      return item.userId;
+    }
+
+    const redis = getRedisForTokens();
+    if (redis) {
+      const raw = await redis.get<ResetTokenRow | string>(`reset:${tokenId}`);
+      if (!raw) return null;
+      const item: ResetTokenRow = typeof raw === 'string' ? JSON.parse(raw) : (raw as ResetTokenRow);
+      if (item.usedAt || item.expiresAt <= nowEpoch || item.tokenHash !== expectedHash) return null;
+      await redis.set(`reset:${tokenId}`, JSON.stringify({ ...item, usedAt: nowIso }), { keepTtl: true });
       return item.userId;
     }
 

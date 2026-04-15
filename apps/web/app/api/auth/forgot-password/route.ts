@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
     const emailResult = await awsSesService.sendResetSenhaEmail(email, resetUrl, ttlForEmail);
     if (!emailResult.success) {
       console.warn('[forgot-password] Could not send reset email:', emailResult.error);
+      console.warn('[forgot-password] Reset URL (copie para testar manualmente):', resetUrl);
     }
 
     return NextResponse.json({ success: true, message: GENERIC_MESSAGE });
