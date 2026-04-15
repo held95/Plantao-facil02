@@ -30,6 +30,7 @@ export {
   dispatchSwapProposto,
   dispatchSwapAceito,
   dispatchSwapRejeitado,
+  dispatchMensagemRecebida,
 } from './orchestrator';
 
 // Provider interfaces
@@ -45,9 +46,10 @@ export type {
 } from './types';
 
 // SMS templates
-export { getDocumentoCriadoMessage } from './sms/templates';
+export { getDocumentoCriadoMessage, getMensagemRecebidaMessage } from './sms/templates';
 
 // Email templates
 export { default as PlantaoCriadoEmail } from './templates/PlantaoCriadoEmail';
 export { default as InscricaoConfirmadaEmail } from './templates/InscricaoConfirmadaEmail';
 export { default as DocumentoCriadoEmail } from './templates/DocumentoCriadoEmail';
+export { default as NovaMensagemEmail } from './templates/NovaMensagemEmail';
