@@ -11,10 +11,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const email = (body?.email || '').trim().toLowerCase();
 
-    const { success } = await forgotPasswordLimiter.limit(email || 'unknown');
-    if (!success) {
-      // Retorna mensagem genérica — não revela que limite foi atingido
-      return NextResponse.json({ success: true, message: GENERIC_MESSAGE });
+    try {
+      const { success } = await forgotPasswordLimiter.limit(email || 'unknown');
+      if (!success) {
+        // Retorna mensagem genérica — não revela que limite foi atingido
+        return NextResponse.json({ success: true, message: GENERIC_MESSAGE });
+      }
+    } catch (rateLimitError) {
+      // Redis pode não estar configurado — continua sem rate limiting
+      console.warn('[forgot-password] Rate limit check failed (Redis may not be configured):', rateLimitError instanceof Error ? rateLimitError.message : rateLimitError);
     }
 
     if (!email) {

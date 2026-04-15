@@ -47,12 +47,13 @@ async function sendHtmlEmail({
   html: string;
 }): Promise<SendEmailResult> {
   if (!EMAIL_ENABLED) {
-    console.log('[awsSesService] Email disabled. Skipping send.');
-    return { success: true };
+    console.warn('[awsSesService] Notificacoes por email desabilitadas. Defina ENABLE_EMAIL_NOTIFICATIONS=true para habilitar.');
+    return { success: false, error: 'EMAIL_NOTIFICATIONS_DISABLED' };
   }
 
   const client = getSESClient();
   if (!client) {
+    console.warn('[awsSesService] Credenciais AWS SES nao configuradas. Verifique AWS_REGION, AWS_ACCESS_KEY_ID e AWS_SECRET_ACCESS_KEY.');
     return { success: false, error: 'AWS SES credentials not configured' };
   }
 
@@ -179,7 +180,22 @@ export const awsSesService = {
     resetUrl: string,
     expirationMinutes: number = 60
   ): Promise<SendEmailResult> {
-    const html = await render(ResetSenhaEmail({ resetUrl, expirationMinutes }));
+    let html: string;
+    try {
+      html = await render(ResetSenhaEmail({ resetUrl, expirationMinutes }));
+    } catch (renderError) {
+      console.error('[sendResetSenhaEmail] Falha ao renderizar template React Email, usando HTML inline:', renderError);
+      html = `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
+          <h2>Redefinicao de senha</h2>
+          <p>Recebemos uma solicitacao para redefinir sua senha.</p>
+          <p>Clique no link abaixo para criar uma nova senha:</p>
+          <p><a href="${resetUrl}">Redefinir senha</a></p>
+          <p>Este link expira em ${expirationMinutes} minutos e pode ser usado apenas uma vez.</p>
+          <p>Se voce nao solicitou a redefinicao, ignore este e-mail.</p>
+        </div>
+      `;
+    }
 
     return sendHtmlEmail({
       to: email,
