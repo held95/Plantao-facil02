@@ -7,7 +7,8 @@ export type NotificationEvent =
   | 'DOCUMENTO_CRIADO'
   | 'SWAP_PROPOSTO'
   | 'SWAP_ACEITO'
-  | 'SWAP_REJEITADO';
+  | 'SWAP_REJEITADO'
+  | 'MENSAGEM_RECEBIDA';
 
 export type NotificationChannel = 'sms' | 'email' | 'push';
 export type DeliveryStatus = 'pending' | 'sent' | 'failed';
