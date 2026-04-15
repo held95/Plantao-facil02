@@ -161,6 +161,7 @@ function NovaMensagemDialog({ open, onClose }: { open: boolean; onClose: () => v
   const [assunto, setAssunto] = useState('');
   const [corpo, setCorpo] = useState('');
   const [arquivo, setArquivo] = useState<File | null>(null);
+  const [sendSms, setSendSms] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   function handleSubmit(e: React.FormEvent) {
@@ -170,9 +171,10 @@ function NovaMensagemDialog({ open, onClose }: { open: boolean; onClose: () => v
     fd.set('assunto', assunto);
     fd.set('corpo', corpo);
     if (arquivo) fd.set('arquivo', arquivo);
+    fd.set('sendSms', sendSms ? 'true' : 'false');
     sendMensagem(fd, {
       onSuccess: () => {
-        setToUserId(''); setAssunto(''); setCorpo(''); setArquivo(null);
+        setToUserId(''); setAssunto(''); setCorpo(''); setArquivo(null); setSendSms(false);
         onClose();
       },
     });
@@ -250,6 +252,18 @@ function NovaMensagemDialog({ open, onClose }: { open: boolean; onClose: () => v
                 <input ref={fileRef} type="file" className="hidden" onChange={(e) => setArquivo(e.target.files?.[0] ?? null)} />
               </label>
             )}
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="sendSms"
+              checked={sendSms}
+              onChange={(e) => setSendSms(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-slate-700 focus:ring-slate-700"
+            />
+            <label htmlFor="sendSms" className="text-sm text-gray-700">
+              Enviar por SMS também
+            </label>
           </div>
           <DialogFooter>
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50">
