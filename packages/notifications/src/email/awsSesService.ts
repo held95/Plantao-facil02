@@ -3,6 +3,7 @@ import { render } from '@react-email/render';
 import PlantaoCriadoEmail from '../templates/PlantaoCriadoEmail';
 import InscricaoConfirmadaEmail from '../templates/InscricaoConfirmadaEmail';
 import DocumentoCriadoEmail from '../templates/DocumentoCriadoEmail';
+import NovaMensagemEmail from '../templates/NovaMensagemEmail';
 import type { Plantao } from '@plantao/shared';
 
 let sesClient: SESClient | null = null;
@@ -196,6 +197,25 @@ export const awsSesService = {
 
   async sendLembrete1h(): Promise<SendEmailResult> {
     return { success: true };
+  },
+
+  async sendNovaMensagemEmail(
+    recipientEmail: string,
+    recipientNome: string,
+    senderNome: string,
+    assunto: string,
+    corpo: string,
+    mensagensUrl: string
+  ): Promise<SendEmailResult> {
+    const emailHtml = await render(
+      NovaMensagemEmail({ recipientNome, senderNome, assunto, corpo, mensagensUrl })
+    );
+
+    return sendHtmlEmail({
+      to: recipientEmail,
+      subject: `Nova mensagem de ${senderNome}: ${assunto}`,
+      html: emailHtml,
+    });
   },
 
   async sendDocumentoCriadoEmail(
