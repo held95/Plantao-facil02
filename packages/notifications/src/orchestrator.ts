@@ -5,6 +5,14 @@ import { twilioSmsService } from './sms/twilioSmsService';
 import { expoPushService } from './push/expoPushService';
 import crypto from 'crypto';
 
+// Minimal message payload — avoids importing Mensagem from @plantao/backend (circular dep)
+interface MensagemPayload {
+  id: string;
+  fromNome: string;
+  assunto: string;
+  corpo: string;
+}
+
 async function makeLog(
   userId: string,
   event: NotificationEvent,
@@ -168,4 +176,55 @@ export async function dispatchSwapRejeitado(
 ): Promise<DeliveryLog[]> {
   console.log('[dispatchSwapRejeitado] stub — swapId:', swapId, 'recipients:', recipients.length);
   return [];
+}
+
+export async function dispatchMensagemRecebida(
+  mensagem: MensagemPayload,
+  recipient: NotificationRecipient,
+  smsEnabled: boolean
+): Promise<DeliveryLog[]> {
+  const logs: DeliveryLog[] = [];
+  const appUrl = process.env.NEXTAUTH_URL || process.env.APP_BASE_URL || 'https://plantaofacil.com';
+  const mensagensUrl = `${appUrl}/mensagens`;
+
+  // Email — always send if recipient has an email (direct messages bypass bulk opt-out)
+  if (recipient.email) {
+    try {
+      const res = await awsSesService.sendNovaMensagemEmail(
+        recipient.email,
+        recipient.nome,
+        mensagem.fromNome,
+        mensagem.assunto,
+        mensagem.corpo,
+        mensagensUrl
+      );
+      logs.push(await makeLog(recipient.userId, 'MENSAGEM_RECEBIDA', 'email', {
+        messageId: res.messageId,
+        error: res.success ? undefined : res.error,
+      }));
+    } catch (err: any) {
+      logs.push(await makeLog(recipient.userId, 'MENSAGEM_RECEBIDA', 'email', { error: err.message }));
+    }
+  }
+
+  // SMS — only if sender opted in AND recipient has a phone number
+  if (smsEnabled && recipient.phone) {
+    try {
+      const { getMensagemRecebidaMessage } = await import('./sms/templates');
+      const template = getMensagemRecebidaMessage({
+        recipientNome: recipient.nome,
+        senderNome: mensagem.fromNome,
+        assunto: mensagem.assunto,
+      });
+      const res = await twilioSmsService.sendCustomSMS(recipient.phone, template.body);
+      logs.push(await makeLog(recipient.userId, 'MENSAGEM_RECEBIDA', 'sms', {
+        messageId: res.messageId,
+        error: res.success ? undefined : res.error,
+      }));
+    } catch (err: any) {
+      logs.push(await makeLog(recipient.userId, 'MENSAGEM_RECEBIDA', 'sms', { error: err.message }));
+    }
+  }
+
+  return logs;
 }
