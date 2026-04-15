@@ -4,6 +4,7 @@ import PlantaoCriadoEmail from '../templates/PlantaoCriadoEmail';
 import InscricaoConfirmadaEmail from '../templates/InscricaoConfirmadaEmail';
 import DocumentoCriadoEmail from '../templates/DocumentoCriadoEmail';
 import NovaMensagemEmail from '../templates/NovaMensagemEmail';
+import ResetSenhaEmail from '../templates/ResetSenhaEmail';
 import type { Plantao } from '@plantao/shared';
 
 let sesClient: SESClient | null = null;
@@ -173,16 +174,12 @@ export const awsSesService = {
     });
   },
 
-  async sendResetSenhaEmail(email: string, resetUrl: string): Promise<SendEmailResult> {
-    const html = `
-      <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #111827;">
-        <h2>Redefinicao de senha</h2>
-        <p>Recebemos uma solicitacao para redefinir sua senha.</p>
-        <p>Use o link abaixo para criar uma nova senha:</p>
-        <p><a href="${resetUrl}">Redefinir senha</a></p>
-        <p>Este link expira em 60 minutos e pode ser usado apenas uma vez.</p>
-      </div>
-    `;
+  async sendResetSenhaEmail(
+    email: string,
+    resetUrl: string,
+    expirationMinutes: number = 60
+  ): Promise<SendEmailResult> {
+    const html = await render(ResetSenhaEmail({ resetUrl, expirationMinutes }));
 
     return sendHtmlEmail({
       to: email,

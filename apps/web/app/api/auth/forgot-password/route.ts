@@ -36,7 +36,8 @@ export async function POST(request: NextRequest) {
       process.env.APP_BASE_URL || process.env.NEXTAUTH_URL || 'http://localhost:3000';
     const resetUrl = `${baseUrl}/reset-password?token=${encodeURIComponent(token)}`;
 
-    const emailResult = await awsSesService.sendResetSenhaEmail(email, resetUrl);
+    const ttlForEmail = Number.isFinite(ttlMinutes) ? ttlMinutes : 60;
+    const emailResult = await awsSesService.sendResetSenhaEmail(email, resetUrl, ttlForEmail);
     if (!emailResult.success) {
       console.warn('[forgot-password] Could not send reset email:', emailResult.error);
     }

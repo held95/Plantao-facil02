@@ -53,3 +53,4 @@ export { default as PlantaoCriadoEmail } from './templates/PlantaoCriadoEmail';
 export { default as InscricaoConfirmadaEmail } from './templates/InscricaoConfirmadaEmail';
 export { default as DocumentoCriadoEmail } from './templates/DocumentoCriadoEmail';
 export { default as NovaMensagemEmail } from './templates/NovaMensagemEmail';
+export { default as ResetSenhaEmail } from './templates/ResetSenhaEmail';
