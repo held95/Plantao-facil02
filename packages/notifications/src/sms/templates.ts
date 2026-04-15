@@ -113,3 +113,13 @@ export function getDocumentoCriadoMessage(params: {
 
   return createTemplate(message);
 }
+
+export function getMensagemRecebidaMessage(params: {
+  recipientNome: string;
+  senderNome: string;
+  assunto: string;
+}): SMSTemplate {
+  const { senderNome, assunto } = params;
+  const message = `Plantao Facil: Nova mensagem de ${senderNome} — "${assunto}". Acesse: ${LOGIN_URL}`;
+  return createTemplate(message);
+}
