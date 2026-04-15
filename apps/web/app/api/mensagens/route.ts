@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@plantao/backend';
 import { messageRepository, authUserRepository } from '@plantao/backend';
+import { dispatchMensagemRecebida } from '@plantao/notifications';
+import type { NotificationRecipient } from '@plantao/notifications';
 
 export async function GET() {
   const { session, error } = await requireAuth();
@@ -25,6 +27,7 @@ export async function POST(request: NextRequest) {
     const assunto = formData.get('assunto') as string;
     const corpo = formData.get('corpo') as string;
     const arquivo = formData.get('arquivo') as File | null;
+    const sendSms = formData.get('sendSms') === 'true';
 
     if (!toUserId || !assunto || !corpo) {
       return NextResponse.json(
@@ -58,6 +61,29 @@ export async function POST(request: NextRequest) {
       corpo,
       ...(anexo ? { anexo } : {}),
     });
+
+    // Fire-and-forget: dispatch runs after response is returned
+    void (async () => {
+      try {
+        const recipient: NotificationRecipient = {
+          userId: destinatario.id,
+          nome: destinatario.nome,
+          email: destinatario.email,
+          phone: destinatario.telefone,
+          pushTokens: [],
+          emailEnabled: true,
+          smsEnabled: true,
+          pushEnabled: false,
+        };
+        const logs = await dispatchMensagemRecebida(mensagem, recipient, sendSms);
+        const failed = logs.filter((l) => l.status === 'failed');
+        if (failed.length > 0) {
+          console.warn(`[mensagens/route] ${failed.length} notification(s) failed`);
+        }
+      } catch (err) {
+        console.error('[mensagens/route] Erro ao despachar notificacoes:', err);
+      }
+    })();
 
     return NextResponse.json({ mensagem }, { status: 201 });
   } catch (err) {
