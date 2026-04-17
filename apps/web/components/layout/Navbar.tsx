@@ -12,6 +12,7 @@ import {
   LogOut,
   ClipboardList,
   Mail,
+  Receipt,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { NotificationDropdown } from '@/components/layout/NotificationDropdown';
@@ -41,19 +42,18 @@ export function Navbar() {
     { href: '/notificacoes', label: 'Notificacoes', icon: Bell },
     { href: '/gerenciar', label: 'Gerenciar Inscricoes', icon: ClipboardList },
     { href: '/dashboard', label: 'Dashboard Admin', icon: LayoutDashboard },
+    { href: '/gerenciar/ir-envios', label: 'IR Envios', icon: Receipt },
   ];
 
   const coordinatorOnlyPages = [
     '/criar',
     '/gerenciar',
     '/gerenciar/aprovacoes',
+    '/gerenciar/ir-envios',
+    '/dashboard',
   ];
 
-  const adminOnlyPages = ['/dashboard'];
   const filteredNavItems = navItems.filter((item) => {
-    if (adminOnlyPages.includes(item.href)) {
-      return user?.role === 'admin';
-    }
     if (coordinatorOnlyPages.includes(item.href)) {
       return user?.role === 'coordenador' || user?.role === 'admin';
     }
