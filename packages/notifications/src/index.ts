@@ -4,6 +4,7 @@ export type { SendEmailResult } from './email/awsSesService';
 
 // SMS
 export { awsSnsService } from './sms/awsSnsService';
+export { twilioSmsService } from './sms/twilioSmsService';
 export {
   getPlantaoCriadoMessage,
   getInscricaoConfirmadaMessage,
@@ -54,3 +55,7 @@ export { default as InscricaoConfirmadaEmail } from './templates/InscricaoConfir
 export { default as DocumentoCriadoEmail } from './templates/DocumentoCriadoEmail';
 export { default as NovaMensagemEmail } from './templates/NovaMensagemEmail';
 export { default as ResetSenhaEmail } from './templates/ResetSenhaEmail';
+export { default as IRDocumentoEmail } from './templates/IRDocumentoEmail';
+
+// IR dispatch templates
+export { getIRDocumentoMessage } from './sms/templates';

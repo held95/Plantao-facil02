@@ -123,3 +123,14 @@ export function getMensagemRecebidaMessage(params: {
   const message = `Plantao Facil: Nova mensagem de ${senderNome} — "${assunto}". Acesse: ${LOGIN_URL}`;
   return createTemplate(message);
 }
+
+export function getIRDocumentoMessage(params: {
+  recipientNome: string;
+  downloadUrl: string;
+  anoReferencia: number;
+}): SMSTemplate {
+  const { anoReferencia, downloadUrl } = params;
+  // URL presignada do S3 é longa — este SMS será multi-part (2-3 segmentos), custo esperado
+  const message = `Plantao Facil: Seu Informe de Rendimentos ${anoReferencia} esta disponivel. Baixe em: ${downloadUrl}`;
+  return createTemplate(message);
+}

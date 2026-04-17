@@ -5,6 +5,7 @@ import InscricaoConfirmadaEmail from '../templates/InscricaoConfirmadaEmail';
 import DocumentoCriadoEmail from '../templates/DocumentoCriadoEmail';
 import NovaMensagemEmail from '../templates/NovaMensagemEmail';
 import ResetSenhaEmail from '../templates/ResetSenhaEmail';
+import IRDocumentoEmail from '../templates/IRDocumentoEmail';
 import type { Plantao } from '@plantao/shared';
 
 let sesClient: SESClient | null = null;
@@ -201,6 +202,23 @@ export const awsSesService = {
       to: email,
       subject: 'Plantao Facil - redefinicao de senha',
       html,
+    });
+  },
+
+  async sendIRDocumentoEmail(
+    email: string,
+    recipientNome: string,
+    downloadUrl: string,
+    anoReferencia: number
+  ): Promise<SendEmailResult> {
+    const emailHtml = await render(
+      IRDocumentoEmail({ recipientNome, downloadUrl, anoReferencia })
+    );
+
+    return sendHtmlEmail({
+      to: email,
+      subject: `Informe de Rendimentos ${anoReferencia} — Plantao Facil`,
+      html: emailHtml,
     });
   },
 
