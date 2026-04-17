@@ -25,7 +25,7 @@ export default function IRDocumentoEmail({
   return (
     <Html>
       <Head />
-      <Preview>Seu Informe de Rendimentos {anoReferencia} esta disponivel para download</Preview>
+      <Preview>{`Seu Informe de Rendimentos ${anoReferencia} esta disponivel para download`}</Preview>
       <Body style={main}>
         <Container style={container}>
           <Heading style={h1}>Informe de Rendimentos {anoReferencia}</Heading>
