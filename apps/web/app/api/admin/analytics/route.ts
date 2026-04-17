@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin, plantaoRepository, authUserRepository, documentRepository } from '@plantao/backend';
+import { requireCoordinator, plantaoRepository, authUserRepository, documentRepository } from '@plantao/backend';
 
 export async function GET(request: NextRequest) {
   try {
-    const { error } = await requireAdmin();
+    const { error } = await requireCoordinator();
     if (error) return error;
 
     const [plantoes, users, docs] = await Promise.all([
