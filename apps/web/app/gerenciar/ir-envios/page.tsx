@@ -549,7 +549,9 @@ export default function IREnviosPage() {
                             {r.emailResult.success ? (
                               <CheckCircle2 className="h-5 w-5 text-green-500 mx-auto" />
                             ) : (
-                              <XCircle className="h-5 w-5 text-red-500 mx-auto" title={r.emailResult.error} />
+                              <span title={r.emailResult.error}>
+                                <XCircle className="h-5 w-5 text-red-500 mx-auto" />
+                              </span>
                             )}
                           </td>
                           <td className="py-2 pr-4 text-center">
